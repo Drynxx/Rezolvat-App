@@ -1,15 +1,4 @@
 import React, { useState } from 'react';
-import { 
-  ShoppingBag, 
-  Wrench, 
-  Plane, 
-  Tag, 
-  FileText, 
-  CheckCircle2, 
-  ShieldCheck, 
-  AlertCircle,
-  ExternalLink
-} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const AnpcModule: React.FC = () => {
@@ -18,7 +7,7 @@ export const AnpcModule: React.FC = () => {
   const categories = [
     {
       id: 'retur',
-      icon: ShoppingBag,
+      icon: 'shopping_bag',
       title: 'Retur în 14 Zile Online',
       law: 'O.U.G. 34/2014',
       badge: 'Rambursare 14 zile',
@@ -26,7 +15,7 @@ export const AnpcModule: React.FC = () => {
     },
     {
       id: 'service',
-      icon: Wrench,
+      icon: 'build',
       title: 'Garanție & Service Defect',
       law: 'O.G. 21/1992',
       badge: 'Max 15 zile calendaristice',
@@ -34,7 +23,7 @@ export const AnpcModule: React.FC = () => {
     },
     {
       id: 'zbor',
-      icon: Plane,
+      icon: 'flight',
       title: 'Zbor Întârziat / Anulat',
       law: 'Reg. CE 261/2004',
       badge: 'Despăgubire 250€ – 600€',
@@ -42,7 +31,7 @@ export const AnpcModule: React.FC = () => {
     },
     {
       id: 'pret',
-      icon: Tag,
+      icon: 'sell',
       title: 'Preț Înșelător Raft vs Casă',
       law: 'Legea 363/2007',
       badge: 'Practică comercială incorectă',
@@ -60,50 +49,50 @@ export const AnpcModule: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col md:grid md:grid-cols-12 md:gap-8 gap-6 animate-fadeIn">
+    <div className="w-full flex flex-col md:grid md:grid-cols-12 md:gap-8 gap-6 animate-fadeIn max-w-5xl mx-auto">
       
       {/* ========================================================================= */}
       {/* LEFT COLUMN: Header Card & CTA (Desktop 5 Cols) */}
       {/* ========================================================================= */}
       <div className="flex flex-col gap-6 md:col-span-5">
-        <div className="glass-card p-6 md:p-8 flex flex-col justify-between h-full relative overflow-hidden">
+        <div className="glass-panel rounded-[28px] bg-surface-container-high/60 p-6 md:p-8 flex flex-col justify-between h-full relative overflow-hidden border-t border-white/10 shadow-xl">
           
           {/* Ambient Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
           <div>
             {/* Top Badges */}
             <div className="flex items-center justify-between gap-2 mb-4">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/20">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-secondary bg-secondary/10 border border-secondary/20">
                 PROTECȚIA CONSUMATORULUI
               </span>
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/20">
-                19 RON / sesizare oficială
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold text-tertiary bg-tertiary/10 border border-tertiary/20">
+                19 RON / sesizare
               </span>
             </div>
 
             {/* Title */}
-            <h2 className="text-[22px] md:text-[26px] font-extrabold text-white tracking-tight mb-3">
+            <h2 className="font-headline-md text-[24px] md:text-[28px] font-bold text-white tracking-tight mb-3">
               Rezolvat ANPC
             </h2>
 
             {/* Subtext */}
-            <p className="text-sm text-slate-300 leading-relaxed mb-6">
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
               Redactează automat plângerea oficială conform legislației UE și românești, gata de depus online direct pe portalul oficial <em>reclamatii.anpc.ro</em>.
             </p>
 
             {/* Feature points */}
             <div className="flex flex-col gap-2.5 mb-6">
-              <div className="flex items-center gap-2 text-xs text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs text-on-surface">
+                <span className="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0">check_circle</span>
                 <span>Format legal validat de juriști români</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs text-on-surface">
+                <span className="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0">check_circle</span>
                 <span>Articole de lege și sancțiuni invocate exact</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs text-on-surface">
+                <span className="material-symbols-outlined text-[18px] text-tertiary flex-shrink-0">check_circle</span>
                 <span>Notificare prealabilă (punere în întârziere) inclusă</span>
               </div>
             </div>
@@ -114,7 +103,7 @@ export const AnpcModule: React.FC = () => {
             onClick={handleGenerateComplaint}
             className="w-full btn-primary-action py-4 px-6 rounded-2xl flex items-center justify-center gap-2.5 text-sm font-bold cursor-pointer"
           >
-            <FileText className="w-4 h-4 text-white" />
+            <span className="material-symbols-outlined text-[18px]">description</span>
             <span>Formulează Reclamație Oficială (19 RON)</span>
           </button>
 
@@ -126,47 +115,46 @@ export const AnpcModule: React.FC = () => {
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-7">
         {categories.map((cat) => {
-          const Icon = cat.icon;
           const isSelected = selectedCategory === cat.id;
 
           return (
             <div
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`p-6 rounded-3xl border transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden ${
+              className={`p-6 rounded-[24px] border transition-all duration-300 cursor-pointer flex flex-col justify-between relative overflow-hidden ${
                 isSelected
-                  ? 'bg-slate-900/70 border-cyan-400/40 shadow-[0_15px_35px_rgba(6,182,212,0.2),inset_0_1px_1px_rgba(255,255,255,0.15)] ring-1 ring-cyan-400/30'
-                  : 'bg-slate-900/40 border-white/[0.08] hover:border-white/[0.15] hover:bg-slate-900/60'
+                  ? 'bg-surface-container-high/90 border-secondary/40 shadow-[0_12px_30px_rgba(123,208,255,0.15)] ring-1 ring-secondary/30'
+                  : 'bg-surface-container/60 border-white/10 hover:border-white/20 hover:bg-surface-container-high/60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border transition-all ${
                     isSelected 
-                      ? 'bg-cyan-500/20 text-cyan-400 border-cyan-400/30' 
-                      : 'bg-white/[0.04] text-slate-300 border-white/[0.08]'
+                      ? 'bg-secondary/20 text-secondary border-secondary/30' 
+                      : 'bg-white/[0.04] text-on-surface border-white/10'
                   }`}>
-                    <Icon className="w-5 h-5 stroke-[2]" />
+                    <span className="material-symbols-outlined text-[22px]">{cat.icon}</span>
                   </div>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/[0.08]">
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/10 text-on-surface-variant border border-white/10">
                     {cat.law}
                   </span>
                 </div>
 
-                <h3 className="font-bold text-base text-white mb-1 tracking-tight">
+                <h3 className="font-headline-md text-base text-white mb-1 tracking-tight font-semibold">
                   {cat.title}
                 </h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
                   {cat.desc}
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
-                <span className="text-[11px] font-bold text-emerald-400">
+              <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                <span className="text-[11px] font-bold text-tertiary">
                   {cat.badge}
                 </span>
                 <span className={`text-[10px] font-mono uppercase transition-colors ${
-                  isSelected ? 'text-cyan-300 font-bold' : 'text-slate-500'
+                  isSelected ? 'text-secondary font-bold' : 'text-on-surface-variant'
                 }`}>
                   {isSelected ? 'Selectat ✓' : 'Alege'}
                 </span>
