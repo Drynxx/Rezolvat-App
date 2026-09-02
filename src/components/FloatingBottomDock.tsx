@@ -1,0 +1,107 @@
+import React from 'react';
+import { Gavel, Car, PlusSquare, FileText, Landmark } from 'lucide-react';
+import { AppTab } from '../types';
+import { useTheme } from '../context/ThemeContext';
+
+interface FloatingBottomDockProps {
+  activeTab: AppTab;
+  setActiveTab: (tab: AppTab) => void;
+  onQuickScan: () => void;
+}
+
+export const FloatingBottomDock: React.FC<FloatingBottomDockProps> = ({
+  activeTab,
+  setActiveTab,
+  onQuickScan,
+}) => {
+  const { isDark } = useTheme();
+
+  return (
+    <nav className={`fixed bottom-0 left-0 right-0 w-full z-50 flex justify-around items-center px-4 py-2.5 max-w-md mx-auto md:hidden backdrop-blur-xl transition-colors duration-200 ${
+      isDark
+        ? 'bg-[#0A0E17]/95 border-t border-white/[0.08] shadow-[0px_-4px_24px_rgba(0,0,0,0.5)]'
+        : 'bg-white/95 border-t border-[#E5E7EB] shadow-[0px_-4px_20px_rgba(0,0,0,0.03)]'
+    }`}>
+      
+      {/* 1. Amenzi */}
+      <button
+        onClick={() => setActiveTab('amendaguard')}
+        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
+          activeTab === 'amendaguard'
+            ? isDark
+              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
+              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
+            : isDark
+              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
+              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
+        }`}
+      >
+        <Gavel className="w-5 h-5 mb-0.5 stroke-[1.8]" />
+        <span className="text-[10px] font-bold">Amenzi</span>
+      </button>
+
+      {/* 2. Auto */}
+      <button
+        onClick={() => setActiveTab('autodox')}
+        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
+          activeTab === 'autodox'
+            ? isDark
+              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
+              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
+            : isDark
+              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
+              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
+        }`}
+      >
+        <Car className="w-5 h-5 mb-0.5 stroke-[1.8]" />
+        <span className="text-[10px] font-bold">Auto</span>
+      </button>
+
+      {/* 3. Scan */}
+      <button
+        onClick={onQuickScan}
+        className={`flex flex-col items-center justify-center px-4 py-1.5 transition-colors cursor-pointer ${
+          isDark ? 'text-[#38BDF8] hover:text-white' : 'text-[#9CA3AF] hover:text-[#0058FF]'
+        }`}
+      >
+        <PlusSquare className="w-5 h-5 mb-0.5 stroke-[1.8]" />
+        <span className="text-[10px] font-bold">Scan</span>
+      </button>
+
+      {/* 4. ANPC */}
+      <button
+        onClick={() => setActiveTab('anpc')}
+        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
+          activeTab === 'anpc'
+            ? isDark
+              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
+              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
+            : isDark
+              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
+              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
+        }`}
+      >
+        <FileText className="w-5 h-5 mb-0.5 stroke-[1.8]" />
+        <span className="text-[10px] font-bold">ANPC</span>
+      </button>
+
+      {/* 5. Ghișeu */}
+      <button
+        onClick={() => setActiveTab('ghiseu')}
+        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
+          activeTab === 'ghiseu' || activeTab === 'pricing'
+            ? isDark
+              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
+              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
+            : isDark
+              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
+              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
+        }`}
+      >
+        <Landmark className="w-5 h-5 mb-0.5 stroke-[1.8]" />
+        <span className="text-[10px] font-bold">Ghișeu</span>
+      </button>
+
+    </nav>
+  );
+};

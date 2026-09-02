@@ -1,0 +1,30 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production build
+dist
+dist-ssr
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test & output artifacts
+output_test_*.pdf
+*.log
+
+# Internal blueprints and planning documents
+*_plan.md
+*_blueprint.md
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
