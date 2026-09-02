@@ -1,7 +1,6 @@
 import React from 'react';
-import { Bell, HelpCircle, Scale, Car, FileText, Landmark, Camera, Shield, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, Bell, HelpCircle, Scale, Car, FileText, Landmark, Camera, Sparkles } from 'lucide-react';
 import { AppTab } from '../types';
-import { useTheme } from '../context/ThemeContext';
 
 interface TopBarProps {
   activeTab: AppTab;
@@ -18,150 +17,120 @@ export const TopBar: React.FC<TopBarProps> = ({
   onQuickScan,
   unreadCount = 1,
 }) => {
-  const { theme, toggleTheme, isDark } = useTheme();
-
   return (
-    <header className="sticky top-0 w-full z-40 bg-[var(--nav-bg)] backdrop-blur-xl border-b border-[var(--nav-border)] transition-colors duration-200">
-      <div className="flex justify-between items-center px-4 md:px-6 h-16 w-full max-w-6xl mx-auto">
+    <header className="sticky top-0 w-full z-40 bg-[#080B11]/80 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
+      <div className="flex justify-between items-center px-4 md:px-8 h-20 w-full max-w-7xl mx-auto">
         
         {/* Left: Brand Logo & Title */}
-        <div className="flex items-center gap-2.5">
-          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
-            isDark 
-              ? 'bg-gradient-to-br from-[#0058FF]/25 to-[#38BDF8]/25 border border-[#38BDF8]/30 text-[#38BDF8]' 
-              : 'bg-[#0058FF]/10 text-[#0058FF]'
-          }`}>
-            <Shield className="w-4 h-4" />
+        <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setActiveTab('amendaguard')}>
+          <div className="relative flex items-center justify-center">
+            {/* Glowing cyan aura */}
+            <div className="absolute inset-0 bg-cyan-500/25 rounded-2xl blur-lg pointer-events-none" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.35),inset_0_1px_1px_rgba(255,255,255,0.2)] relative z-10">
+              <ShieldCheck className="w-5 h-5 stroke-[2.4] text-cyan-400" />
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-lg font-bold text-[var(--text-main)] tracking-tight">
-              Birocrație<span className={isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}>Zero</span>
-            </span>
-            <span className={`px-1.5 py-0.5 text-[9px] font-bold tracking-wider rounded-full uppercase ${
-              isDark 
-                ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20' 
-                : 'text-[#0058FF] bg-[#0058FF]/10'
-            }`}>
-              AI RO
+
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-[20px] font-extrabold tracking-tight text-white leading-none">
+                Rezolvat
+              </span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono px-2 py-0.5 rounded-full font-bold">
+                AI RO
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium tracking-normal mt-1 leading-none">
+              Birocrație. Rezolvată.
             </span>
           </div>
         </div>
 
-        {/* Center: Desktop Navigation Tabs */}
-        <nav className={`hidden md:flex items-center gap-1.5 p-1.5 rounded-full border transition-colors ${
-          isDark 
-            ? 'bg-[#1C1F2B] border-white/[0.08] shadow-inner' 
-            : 'bg-[#F9FAFB] border-[#E5E7EB]'
-        }`}>
+        {/* Center: Desktop Floating Navigation Pill Switcher */}
+        <nav className="hidden md:flex items-center gap-1.5 p-1.5 rounded-full bg-slate-900/50 backdrop-blur-2xl border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.08)]">
           <button
             onClick={() => setActiveTab('amendaguard')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === 'amendaguard'
-                ? 'bg-[#0058FF] text-white shadow-sm'
-                : isDark 
-                  ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]' 
-                  : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+                ? 'bg-white/[0.12] text-white shadow-[0_0_20px_rgba(255,255,255,0.15)] border border-white/20 backdrop-blur-xl'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <Scale className="w-4 h-4" />
-            <span>Amenzi</span>
+            <Scale className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Rezolvat Amenzi</span>
           </button>
 
           <button
             onClick={() => setActiveTab('autodox')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === 'autodox'
-                ? 'bg-[#0058FF] text-white shadow-sm'
-                : isDark 
-                  ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]' 
-                  : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+                ? 'bg-white/[0.12] text-white shadow-[0_0_20px_rgba(255,255,255,0.15)] border border-white/20 backdrop-blur-xl'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <Car className="w-4 h-4" />
-            <span>AutoDox</span>
+            <Car className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Rezolvat Auto (5x)</span>
           </button>
 
           <button
             onClick={() => setActiveTab('anpc')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === 'anpc'
-                ? 'bg-[#0058FF] text-white shadow-sm'
-                : isDark 
-                  ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]' 
-                  : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+                ? 'bg-white/[0.12] text-white shadow-[0_0_20px_rgba(255,255,255,0.15)] border border-white/20 backdrop-blur-xl'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <FileText className="w-4 h-4" />
-            <span>ANPC</span>
+            <FileText className="w-3.5 h-3.5 text-amber-400" />
+            <span>Rezolvat ANPC</span>
           </button>
 
           <button
             onClick={() => setActiveTab('ghiseu')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === 'ghiseu' || activeTab === 'pricing'
-                ? 'bg-[#0058FF] text-white shadow-sm'
-                : isDark 
-                  ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]' 
-                  : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+                ? 'bg-white/[0.12] text-white shadow-[0_0_20px_rgba(255,255,255,0.15)] border border-white/20 backdrop-blur-xl'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <Landmark className="w-4 h-4" />
-            <span>Ghișeu</span>
+            <Landmark className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Rezolvat Ghișeu</span>
           </button>
         </nav>
 
-        {/* Right: Actions, Theme Switcher & Notifications */}
-        <div className="flex items-center gap-2">
+        {/* Right: Action Buttons */}
+        <div className="flex items-center gap-3">
           
-          {/* Quick Scan Button (Desktop) */}
+          {/* Quick Scan AI Button (Desktop) */}
           <button
             onClick={onQuickScan}
-            className="hidden lg:flex items-center gap-2 py-2 px-4 rounded-full bg-[#0058FF] hover:bg-[#0047D4] text-white text-xs font-semibold shadow-sm transition-all cursor-pointer active:scale-95"
+            className="hidden lg:flex items-center gap-2 py-2.5 px-5 rounded-2xl btn-primary-action text-xs font-bold cursor-pointer"
           >
-            <Camera className="w-3.5 h-3.5 text-white" />
-            <span>Scanare AI</span>
+            <Camera className="w-4 h-4" />
+            <span>Scanează cu AI</span>
           </button>
 
-          {/* Theme Toggle Button (Light ☀️ / Dark 🌙) */}
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-full transition-all cursor-pointer ${
-              isDark
-                ? 'text-[#38BDF8] hover:bg-white/[0.08] hover:text-white'
-                : 'text-[#6B7280] hover:bg-gray-100 hover:text-[#111827]'
-            }`}
-            title={`Comută pe tema ${isDark ? 'luminoasă (White)' : 'întunecată (Dark-Depth)'}`}
-            aria-label="Comută tema"
-          >
-            {isDark ? (
-              <Sun className="w-5 h-5 stroke-[1.8] text-[#FBBF24]" />
-            ) : (
-              <Moon className="w-5 h-5 stroke-[1.8] text-[#4B5563]" />
-            )}
-          </button>
-
-          {/* Legal Disclaimer */}
+          {/* Legal Compliance Disclaimer */}
           <button
             onClick={onOpenDisclaimer}
-            className={`p-2 rounded-full transition-colors cursor-pointer ${
-              isDark ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.06]' : 'text-[#6B7280] hover:text-[#111827] hover:bg-gray-100'
-            }`}
-            title="Aviz Legal & Conformitate"
+            title="Cadrul Legal & Conformitate Statutară"
+            aria-label="Informații legale"
+            className="w-10 h-10 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer"
           >
-            <HelpCircle className="w-5 h-5 stroke-[1.5]" />
+            <HelpCircle className="w-4 h-4" />
           </button>
 
-          {/* Notifications */}
-          <button className={`relative p-2 rounded-full transition-colors cursor-pointer ${
-            isDark ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.06]' : 'text-[#111827] hover:opacity-80'
-          }`}>
-            <Bell className="w-5 h-5 stroke-[1.5]" />
+          {/* Notifications Bell */}
+          <button 
+            title="Notificări" 
+            aria-label="Notificări dosar"
+            className="w-10 h-10 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white flex items-center justify-center relative transition-all cursor-pointer"
+          >
+            <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
-                isDark ? 'bg-[#FFB7B2] shadow-[0_0_8px_#FFB7B2]' : 'bg-[#E11D48]'
-              } ring-2 ${isDark ? 'ring-[#0A0E17]' : 'ring-white'}`} />
+              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             )}
           </button>
+
         </div>
 
       </div>

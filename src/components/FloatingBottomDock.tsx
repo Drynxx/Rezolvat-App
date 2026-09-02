@@ -1,7 +1,6 @@
 import React from 'react';
-import { Gavel, Car, PlusSquare, FileText, Landmark } from 'lucide-react';
+import { Scale, Car, Plus, FileText, Landmark } from 'lucide-react';
 import { AppTab } from '../types';
-import { useTheme } from '../context/ThemeContext';
 
 interface FloatingBottomDockProps {
   activeTab: AppTab;
@@ -14,94 +13,73 @@ export const FloatingBottomDock: React.FC<FloatingBottomDockProps> = ({
   setActiveTab,
   onQuickScan,
 }) => {
-  const { isDark } = useTheme();
-
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 w-full z-50 flex justify-around items-center px-4 py-2.5 max-w-md mx-auto md:hidden backdrop-blur-xl transition-colors duration-200 ${
-      isDark
-        ? 'bg-[#0A0E17]/95 border-t border-white/[0.08] shadow-[0px_-4px_24px_rgba(0,0,0,0.5)]'
-        : 'bg-white/95 border-t border-[#E5E7EB] shadow-[0px_-4px_20px_rgba(0,0,0,0.03)]'
-    }`}>
-      
-      {/* 1. Amenzi */}
-      <button
-        onClick={() => setActiveTab('amendaguard')}
-        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
-          activeTab === 'amendaguard'
-            ? isDark
-              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
-              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
-            : isDark
-              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
-              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
-        }`}
-      >
-        <Gavel className="w-5 h-5 mb-0.5 stroke-[1.8]" />
-        <span className="text-[10px] font-bold">Amenzi</span>
-      </button>
+    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none md:hidden">
+      <nav className="pointer-events-auto flex items-center justify-between gap-1 p-2 rounded-full bg-[#080B11]/85 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)] max-w-sm w-full">
+        
+        {/* 1. Amenzi */}
+        <button
+          onClick={() => setActiveTab('amendaguard')}
+          className={`flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-full transition-all cursor-pointer ${
+            activeTab === 'amendaguard'
+              ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Scale className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px] font-bold tracking-tight">Amenzi</span>
+        </button>
 
-      {/* 2. Auto */}
-      <button
-        onClick={() => setActiveTab('autodox')}
-        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
-          activeTab === 'autodox'
-            ? isDark
-              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
-              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
-            : isDark
-              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
-              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
-        }`}
-      >
-        <Car className="w-5 h-5 mb-0.5 stroke-[1.8]" />
-        <span className="text-[10px] font-bold">Auto</span>
-      </button>
+        {/* 2. AutoDox */}
+        <button
+          onClick={() => setActiveTab('autodox')}
+          className={`flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-full transition-all cursor-pointer ${
+            activeTab === 'autodox'
+              ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Car className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px] font-bold tracking-tight">AutoDox</span>
+        </button>
 
-      {/* 3. Scan */}
-      <button
-        onClick={onQuickScan}
-        className={`flex flex-col items-center justify-center px-4 py-1.5 transition-colors cursor-pointer ${
-          isDark ? 'text-[#38BDF8] hover:text-white' : 'text-[#9CA3AF] hover:text-[#0058FF]'
-        }`}
-      >
-        <PlusSquare className="w-5 h-5 mb-0.5 stroke-[1.8]" />
-        <span className="text-[10px] font-bold">Scan</span>
-      </button>
+        {/* 3. Center Elevated Glowing Cyan Scan Button */}
+        <button
+          onClick={onQuickScan}
+          title="Scanează Document cu AI"
+          aria-label="Scanează"
+          className="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 border border-cyan-300/40 text-white flex items-center justify-center shadow-[0_10px_25px_rgba(6,182,212,0.5),inset_0_1px_2px_rgba(255,255,255,0.4)] active:scale-95 transition-all cursor-pointer flex-shrink-0"
+        >
+          <Plus className="w-6 h-6 stroke-[2.5]" />
+        </button>
 
-      {/* 4. ANPC */}
-      <button
-        onClick={() => setActiveTab('anpc')}
-        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
-          activeTab === 'anpc'
-            ? isDark
-              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
-              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
-            : isDark
-              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
-              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
-        }`}
-      >
-        <FileText className="w-5 h-5 mb-0.5 stroke-[1.8]" />
-        <span className="text-[10px] font-bold">ANPC</span>
-      </button>
+        {/* 4. ANPC */}
+        <button
+          onClick={() => setActiveTab('anpc')}
+          className={`flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-full transition-all cursor-pointer ${
+            activeTab === 'anpc'
+              ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <FileText className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px] font-bold tracking-tight">ANPC</span>
+        </button>
 
-      {/* 5. Ghișeu */}
-      <button
-        onClick={() => setActiveTab('ghiseu')}
-        className={`flex flex-col items-center justify-center transition-all cursor-pointer ${
-          activeTab === 'ghiseu' || activeTab === 'pricing'
-            ? isDark
-              ? 'text-white bg-[#0058FF] shadow-[0_0_14px_rgba(0,88,255,0.5)] border border-[#38BDF8]/40 rounded-full px-5 py-1.5 font-bold'
-              : 'text-[#0058FF] bg-[#0058FF]/10 rounded-full px-5 py-1.5 font-bold'
-            : isDark
-              ? 'text-[#A0A0A0] hover:text-white px-4 py-1.5'
-              : 'text-[#9CA3AF] hover:text-[#111827] px-4 py-1.5'
-        }`}
-      >
-        <Landmark className="w-5 h-5 mb-0.5 stroke-[1.8]" />
-        <span className="text-[10px] font-bold">Ghișeu</span>
-      </button>
+        {/* 5. Ghișeu */}
+        <button
+          onClick={() => setActiveTab('ghiseu')}
+          className={`flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-full transition-all cursor-pointer ${
+            activeTab === 'ghiseu' || activeTab === 'pricing'
+              ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Landmark className="w-4 h-4 mb-0.5" />
+          <span className="text-[10px] font-bold tracking-tight">Ghișeu</span>
+        </button>
 
-    </nav>
+      </nav>
+    </div>
   );
 };

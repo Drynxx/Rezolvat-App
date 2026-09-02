@@ -1,5 +1,23 @@
 import React, { useState } from 'react';
-import { Building2, FileText, Download, RefreshCw, Copy, Check, ShieldCheck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Building2, 
+  FileText, 
+  Download, 
+  RefreshCw, 
+  Copy, 
+  Check, 
+  Camera, 
+  Upload, 
+  Zap, 
+  ChevronDown, 
+  ChevronUp, 
+  CheckCircle2, 
+  ShieldCheck, 
+  Receipt, 
+  CreditCard, 
+  AlertTriangle 
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { LegalAnalysisResult, SampleTicket, ProcesVerbalExtractedData } from '../../types';
 import { RomanianContraventionRuleEngine } from '../../lib/legal-engine/contravention-rules';
@@ -7,12 +25,7 @@ import { SAMPLE_TICKETS } from '../../lib/data/sample-tickets';
 import { generatePlangerePdf } from '../../lib/pdf/plangere-generator';
 import { preprocessDocumentImage, ProcessedImageResult } from '../../lib/ocr/compression';
 import { extractProcesVerbalFromImage } from '../../lib/ocr/gemini-vision';
-import { RadarHeroCard } from '../RadarHeroCard';
-import { ActionDock } from '../ActionDock';
-import { CaseCarousel } from '../CaseCarousel';
-import { ProceduralFlawsCard } from '../ProceduralFlawsCard';
 import { OcrReviewModal } from '../OcrReviewModal';
-import { useTheme } from '../../context/ThemeContext';
 
 interface AmendaGuardModuleProps {
   onOpenScanModal: () => void;
@@ -20,22 +33,20 @@ interface AmendaGuardModuleProps {
 }
 
 export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScanModal, scannedData }) => {
-  const { isDark } = useTheme();
   const [currentTicketData, setCurrentTicketData] = useState<ProcesVerbalExtractedData>(SAMPLE_TICKETS[0].data);
-  const [selectedTicketId, setSelectedTicketId] = useState<string>(SAMPLE_TICKETS[0].id);
   const [analysis, setAnalysis] = useState<LegalAnalysisResult>(() => 
     RomanianContraventionRuleEngine.analyze(SAMPLE_TICKETS[0].data)
   );
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
+  const [isCopiedEmail, setIsCopiedEmail] = useState<boolean>(false);
   const [isCopiedIban, setIsCopiedIban] = useState<boolean>(false);
+  const [isAccordionOpen, setIsAccordionOpen] = useState<boolean>(true);
 
   // Review Modal State
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
   const [reviewData, setReviewData] = useState<ProcesVerbalExtractedData | null>(null);
   const [compressionStats, setCompressionStats] = useState<ProcessedImageResult | null>(null);
 
-  // When new scanned data arrives from parent
   React.useEffect(() => {
     if (scannedData) {
       setReviewData(scannedData.data);
@@ -44,37 +55,24 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
     }
   }, [scannedData]);
 
-  const handleSelectCase = (sample: SampleTicket) => {
-    setIsProcessing(true);
-    setSelectedTicketId(sample.id);
-    setCurrentTicketData(sample.data);
-    setTimeout(() => {
-      const res = RomanianContraventionRuleEngine.analyze(sample.data);
-      setAnalysis(res);
-      setIsProcessing(false);
-    }, 280);
-  };
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleUploadFile = async (file: File) => {
     try {
-      setIsProcessing(true);
       const compressed = await preprocessDocumentImage(file, 1200, 0.75);
       const ocrResult = await extractProcesVerbalFromImage(compressed.base64, compressed.mimeType);
-      
       setReviewData(ocrResult.data);
       setCompressionStats(compressed);
       setIsReviewModalOpen(true);
     } catch (err) {
       console.error('Upload OCR error:', err);
       alert('Eroare la procesarea documentului.');
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleConfirmOcrData = (validatedData: ProcesVerbalExtractedData) => {
     setCurrentTicketData(validatedData);
-    setSelectedTicketId('custom-scanned');
     const newAnalysis = RomanianContraventionRuleEngine.analyze(validatedData);
     setAnalysis(newAnalysis);
   };
@@ -88,7 +86,7 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Plangere_Contravențională_${currentTicketData.pv_series}_${currentTicketData.pv_number}.pdf`;
+      link.download = `Dosar_Anulare_PV_${currentTicketData.pv_series}_${currentTicketData.pv_number}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -107,6 +105,12 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
     }
   };
 
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(analysis.competentCourt.email);
+    setIsCopiedEmail(true);
+    setTimeout(() => setIsCopiedEmail(false), 2000);
+  };
+
   const handleCopyIban = () => {
     const iban = analysis.competentCourt.timbruTaxIban || 'RO49TREZ70020A100101XXXX';
     navigator.clipboard.writeText(iban);
@@ -114,130 +118,291 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
     setTimeout(() => setIsCopiedIban(false), 2000);
   };
 
+  // 100px Radial Gauge calculation (radius = 38)
+  const radius = 38;
+  const circumference = 2 * Math.PI * radius;
+  const score = analysis.successScore || 85;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+
   return (
-    <div className="w-full flex flex-col md:grid md:grid-cols-12 md:gap-8 gap-6">
+    <div className="w-full flex flex-col md:grid md:grid-cols-12 md:gap-8 gap-6 animate-fadeIn">
       
-      {/* LEFT COLUMN (Mobile Full / Desktop 7 Cols) */}
+      {/* ========================================================================= */}
+      {/* LEFT CARD: Radar Rezolvat Hero (Desktop 7 Cols) */}
+      {/* ========================================================================= */}
       <div className="flex flex-col gap-6 md:col-span-7">
-        
-        {/* 1. Hero Win Probability Radar Card & Data Grid */}
-        <RadarHeroCard 
-          analysis={analysis} 
-          ticketData={currentTicketData} 
-        />
+        <div className="glass-card p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden">
+          
+          {/* Ambient Glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        {/* 2. Tactile Action Dock */}
-        <ActionDock 
-          onScanClick={onOpenScanModal}
-          onUploadClick={handleUploadFile}
-          onDownloadPdf={handleDownloadPdf}
-          isGeneratingPdf={isGeneratingPdf}
-          courtName={analysis.competentCourt.name}
-        />
-
-        {/* 3. Interactive Case Simulator Carousel */}
-        <CaseCarousel 
-          selectedTicketId={selectedTicketId}
-          onSelectCase={handleSelectCase}
-        />
-
-        {/* 4. Procedural Flaws Bento Card (Accordion) */}
-        <ProceduralFlawsCard 
-          analysis={analysis}
-          isLoading={isProcessing}
-        />
-
-        {/* Mobile only Court Card */}
-        <div className="md:hidden app-panel p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-              isDark ? 'bg-[#0058FF]/20 text-[#38BDF8]' : 'bg-[#0058FF]/10 text-[#0058FF]'
-            }`}>
-              <Building2 className="w-5 h-5 stroke-[1.8]" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-[var(--text-main)]">
-                {analysis.competentCourt.name}
+          {/* Card Header & Radial Gauge */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-2 border-b border-white/[0.08]">
+            <div className="flex flex-col gap-2 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse" />
+                <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-bold">
+                  Viciu Procedural Depistat (O.G. 2/2001)
+                </span>
               </div>
-              <div className="text-[11px] text-[var(--text-muted)]">
-                {analysis.competentCourt.email}
+              <h2 className="text-[22px] md:text-[24px] font-bold text-white tracking-tight">
+                Radar Rezolvat
+              </h2>
+              <p className="text-xs text-slate-400 max-w-sm">
+                Analiză juridică automată în timp real a procesului-verbal conform jurisprudenței românești.
+              </p>
+            </div>
+
+            {/* 100px Circular SVG Radial Gauge showing 85% */}
+            <div className="relative w-[100px] h-[100px] flex items-center justify-center flex-shrink-0">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
+                <defs>
+                  <linearGradient id="emeraldRadialGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10B981" />
+                    <stop offset="100%" stopColor="#34D399" />
+                  </linearGradient>
+                </defs>
+                
+                {/* Track */}
+                <circle
+                  cx="45"
+                  cy="45"
+                  r={radius}
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.08)"
+                  strokeWidth="6"
+                />
+
+                {/* Progress */}
+                <motion.circle
+                  cx="45"
+                  cy="45"
+                  r={radius}
+                  fill="none"
+                  stroke="url(#emeraldRadialGrad)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  initial={{ strokeDashoffset: circumference }}
+                  animate={{ strokeDashoffset }}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))'
+                  }}
+                />
+              </svg>
+
+              <div className="absolute flex flex-col items-center justify-center">
+                <span className="text-2xl font-extrabold text-white tracking-tight leading-none">
+                  {score}%
+                </span>
+                <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest mt-0.5">
+                  Șanse
+                </span>
               </div>
             </div>
           </div>
-          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-            isDark 
-              ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20' 
-              : 'text-[#0058FF] bg-[#0058FF]/10'
-          }`}>
-            COMPETENȚĂ
-          </span>
-        </div>
 
+          {/* Metadata Bar */}
+          <div className="grid grid-cols-3 gap-2 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase font-mono text-slate-400">Proces-Verbal</span>
+              <span className="text-xs md:text-sm font-bold text-white mt-0.5">
+                {currentTicketData.pv_series} {currentTicketData.pv_number}
+              </span>
+            </div>
+            <div className="flex flex-col border-x border-white/[0.08]">
+              <span className="text-[10px] uppercase font-mono text-slate-400">Valoare Amendă</span>
+              <span className="text-xs md:text-sm font-bold text-rose-300 mt-0.5">
+                {currentTicketData.fine_amount_ron} RON
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase font-mono text-slate-400">Puncte Penalizare</span>
+              <span className="text-xs md:text-sm font-bold text-amber-300 mt-0.5">
+                {currentTicketData.penalty_points || 3} Puncte
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3">
+            {/* Primary Action Button: Scanează Proces-Verbal cu AI */}
+            <button
+              onClick={onOpenScanModal}
+              className="w-full btn-primary-action py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 cursor-pointer text-sm font-bold shadow-[0_10px_25px_rgba(6,182,212,0.25)]"
+            >
+              <Camera className="w-4 h-4 text-white" />
+              <span>Scanează Proces-Verbal cu AI</span>
+            </button>
+
+            {/* Secondary Split Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <label className="btn-glass-secondary py-3 px-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer text-xs font-medium">
+                <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Încarcă PDF / Poze</span>
+                <input 
+                  type="file" 
+                  accept="image/*,application/pdf" 
+                  className="hidden" 
+                  onChange={handleUploadFile}
+                />
+              </label>
+
+              <button
+                onClick={handleDownloadPdf}
+                className="btn-glass-secondary py-3 px-4 rounded-2xl flex items-center justify-center gap-2 cursor-pointer text-xs font-medium"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>Taxă 20 lei & Plângere</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Accordion Card: Viciu Procedural */}
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden transition-all">
+            <button
+              onClick={() => setIsAccordionOpen(!isAccordionOpen)}
+              className="w-full p-4 flex items-center justify-between text-left cursor-pointer hover:bg-white/[0.03] transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-white tracking-tight">
+                    Lipsă serie aparat radar cinemometru (Norma NML 021-05)
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    Nulitate absolută conform deciziei RIL a Înaltei Curți de Casație și Justiție
+                  </span>
+                </div>
+              </div>
+              {isAccordionOpen ? (
+                <ChevronUp className="w-4 h-4 text-slate-400" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              )}
+            </button>
+
+            <AnimatePresence>
+              {isAccordionOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="px-4 pb-4 pt-1 text-[11px] text-slate-300 leading-relaxed border-t border-white/[0.04]"
+                >
+                  <p className="mb-2">
+                    Agentul constatator nu a consemnat seria aparatului cinemometru și buletinul de verificare metrologică valabil în cuprinsul rubricii de descriere a faptei.
+                  </p>
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-[10px]">
+                    ✓ Art. 16 alin. (1) O.G. 2/2001 raportat la NML 021-05 determină lipsa probatoriului tehnic al vitezei.
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+        </div>
       </div>
 
-      {/* RIGHT COLUMN (Visible on Desktop 5 Cols) */}
-      <div className="hidden md:flex flex-col gap-6 md:col-span-5">
-        
-        {/* Right 1: Live Court Pleading Preview Card */}
-        <div className="app-panel p-6 flex flex-col justify-between">
+      {/* ========================================================================= */}
+      {/* RIGHT CARD: Official Court Dossier Preview (Desktop 5 Cols) */}
+      {/* ========================================================================= */}
+      <div className="flex flex-col gap-6 md:col-span-5">
+        <div className="glass-card p-6 md:p-8 flex flex-col justify-between h-full relative overflow-hidden">
+          
           <div>
+            {/* Header badge */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <FileText className={`w-5 h-5 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"} stroke-[1.8]`} />
-                <h4 className="text-sm font-bold text-[var(--text-main)] tracking-tight uppercase">
-                  Dosar Juridic Generat
-                </h4>
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Dosar Juridic Oficial
+                </h3>
               </div>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                isDark 
-                  ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20' 
-                  : 'text-[#0058FF] bg-[#0058FF]/10'
-              }`}>
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-mono text-cyan-300 font-bold">
                 Art. 194 C.pr.civ.
               </span>
             </div>
 
-            {/* Document Paper Mockup */}
-            <div className={`p-4 rounded-[14px] border text-[11px] font-mono flex flex-col gap-2.5 ${
-              isDark 
-                ? 'bg-[#131620] border-white/[0.06] text-[#D1D5DB]' 
-                : 'bg-[#F9FAFB] border-gray-100 text-[#111827]'
-            }`}>
-              <div className={`text-center font-bold pb-2 border-b ${
-                isDark ? 'text-[#38BDF8] border-white/[0.08]' : 'text-[#0058FF] border-gray-200'
-              }`}>
-                PLÂNGERE CONTRAVENȚIONALĂ
+            {/* macOS Legal Window Mockup */}
+            <div className="rounded-2xl border border-white/[0.08] bg-slate-950/70 p-5 flex flex-col gap-3.5 shadow-inner text-[11px]">
+              
+              {/* Window Controls */}
+              <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                </div>
+                <span className="text-[10px] font-mono text-slate-400">
+                  plangere_contraventionala.pdf
+                </span>
               </div>
-              <div className="text-[10px] text-[var(--text-muted)]">
-                <strong className="text-[var(--text-main)]">CĂTRE:</strong> {analysis.competentCourt.name.toUpperCase()}
+
+              {/* Court Details */}
+              <div className="flex flex-col gap-1">
+                <div className="text-[10px] font-mono uppercase text-slate-400">Instanța Competentă:</div>
+                <div className="text-xs font-bold text-white">
+                  {analysis.competentCourt.name}
+                </div>
+                <div className="flex items-center justify-between mt-1 p-2 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  <span className="font-mono text-[10px] text-cyan-300 truncate max-w-[200px]">
+                    {analysis.competentCourt.email}
+                  </span>
+                  <button
+                    onClick={handleCopyEmail}
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer px-2 py-0.5 rounded-lg bg-white/[0.06]"
+                  >
+                    {isCopiedEmail ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{isCopiedEmail ? 'Copiat' : 'Copiază'}</span>
+                  </button>
+                </div>
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] leading-tight">
-                <strong className="text-[var(--text-main)]">PETENT:</strong> {currentTicketData.contravener_name || 'Contravenient'} (CNP {currentTicketData.contravener_cnp || '1920415XXXXXX'})
+
+              {/* Taxa Timbru 20 RON */}
+              <div className="flex flex-col gap-1 pt-2 border-t border-white/[0.06]">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="font-mono uppercase text-slate-400">Taxă Judiciară de Timbru:</span>
+                  <span className="font-bold text-emerald-400">20 RON (Fixă)</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] mt-1">
+                  <span className="font-mono text-[9px] text-slate-300 truncate max-w-[190px]">
+                    IBAN: {analysis.competentCourt.timbruTaxIban || 'RO49TREZ70020A100101XXXX'}
+                  </span>
+                  <button
+                    onClick={handleCopyIban}
+                    className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer px-2 py-0.5 rounded-lg bg-white/[0.06]"
+                  >
+                    {isCopiedIban ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{isCopiedIban ? 'Copiat' : 'IBAN'}</span>
+                  </button>
+                </div>
               </div>
-              <div className="text-[10px] text-[var(--text-muted)] leading-tight">
-                <strong className="text-[var(--text-main)]">OBIECT:</strong> Anulare PV seria {currentTicketData.pv_series} nr. {currentTicketData.pv_number}
+
+              {/* Procedural guarantee */}
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[10px] flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 text-emerald-400" />
+                <span>Include clauza Art. 411 alin. 2 C.pr.civ. (judecare în lipsă).</span>
               </div>
-              <div className={`p-2.5 rounded-[10px] text-[10px] font-sans leading-snug border ${
-                isDark 
-                  ? 'bg-[#10B981]/10 border-[#10B981]/25 text-[#34D399]' 
-                  : 'bg-[#ECFDF5] border-[#059669]/20 text-[#059669]'
-              }`}>
-                ✓ Clauză <strong>Art. 411 alin. 2 C.pr.civ.</strong> inclusă (Judecare în lipsă fără prezență la tribunal).
-              </div>
+
             </div>
           </div>
 
+          {/* Download Full Dossier Button */}
           <button
             onClick={handleDownloadPdf}
             disabled={isGeneratingPdf}
-            className={`mt-5 w-full bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold py-3.5 px-4 rounded-full flex items-center justify-center gap-2 text-sm transition-all cursor-pointer shadow-sm ${
-              isDark ? 'btn-primary-action' : ''
-            }`}
+            className="w-full mt-6 btn-primary-action py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold cursor-pointer disabled:opacity-50"
           >
             {isGeneratingPdf ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin text-[#38BDF8]" />
-                <span>Se redactează PDF...</span>
+                <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                <span>Se compilează dosarul...</span>
               </>
             ) : (
               <>
@@ -246,110 +411,20 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
               </>
             )}
           </button>
+
         </div>
-
-        {/* Right 2: Competent Court Routing Card */}
-        <div className="app-panel p-6 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Building2 className={`w-5 h-5 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"} stroke-[1.8]`} />
-              <h4 className="font-bold text-sm text-[var(--text-main)] tracking-tight uppercase">
-                Instanța Teritorială
-              </h4>
-            </div>
-            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-              isDark 
-                ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20' 
-                : 'text-[#0058FF] bg-[#0058FF]/10'
-            }`}>
-              Competentă
-            </span>
-          </div>
-
-          <div className="text-base font-bold text-[var(--text-main)]">
-            {analysis.competentCourt.name}
-          </div>
-          <div className="text-xs text-[var(--text-muted)] leading-snug">
-            📍 {analysis.competentCourt.address}
-          </div>
-          <div className={`text-xs font-medium ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`}>
-            ✉️ {analysis.competentCourt.email}
-          </div>
-
-          {/* IBAN for 20 RON Taxă Timbru */}
-          <div className={`mt-2 pt-3 border-t flex items-center justify-between p-3 rounded-[12px] border ${
-            isDark 
-              ? 'border-white/[0.08] bg-[#131620] border-white/[0.06]' 
-              : 'border-gray-100 bg-[#F9FAFB] border-gray-100'
-          }`}>
-            <div className="min-w-0">
-              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">IBAN Taxă Timbru (20 lei):</div>
-              <div className="text-xs font-mono text-[var(--text-main)] truncate mt-0.5">
-                {analysis.competentCourt.timbruTaxIban || 'RO49TREZ70020A100101XXXX'}
-              </div>
-            </div>
-            <button
-              onClick={handleCopyIban}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer ${
-                isDark
-                  ? 'bg-[#1C1F2B] hover:bg-[#242838] border border-white/[0.1] text-white shadow-inner'
-                  : 'bg-white hover:bg-gray-100 border border-gray-200 text-[#111827]'
-              }`}
-              title="Copiază IBAN"
-            >
-              {isCopiedIban ? <Check className="w-3.5 h-3.5 text-[#34D399]" /> : <Copy className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
-              <span>{isCopiedIban ? 'Copiat' : 'Copiază'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Right 3: Step-by-Step Filing Roadmap */}
-        <div className="app-panel p-6 flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className={`w-5 h-5 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"} stroke-[1.8]`} />
-            <h4 className="font-bold text-sm text-[var(--text-main)] tracking-tight uppercase">
-              Procedură Depunere (3 Pași)
-            </h4>
-          </div>
-
-          <div className="flex flex-col gap-2.5 text-xs text-[var(--text-muted)]">
-            <div className={`flex items-start gap-3 p-2.5 rounded-[12px] border ${
-              isDark ? 'bg-[#131620] border-white/[0.04]' : 'bg-[#F9FAFB] border-gray-100'
-            }`}>
-              <span className={`w-5 h-5 rounded-full font-bold text-xs flex items-center justify-center flex-shrink-0 ${
-                isDark ? 'bg-[#0058FF]/25 text-[#38BDF8]' : 'bg-[#0058FF]/10 text-[#0058FF]'
-              }`}>1</span>
-              <span>Descarcă plângerea PDF redactată conform Codului de Procedură Civilă.</span>
-            </div>
-            <div className={`flex items-start gap-3 p-2.5 rounded-[12px] border ${
-              isDark ? 'bg-[#131620] border-white/[0.04]' : 'bg-[#F9FAFB] border-gray-100'
-            }`}>
-              <span className={`w-5 h-5 rounded-full font-bold text-xs flex items-center justify-center flex-shrink-0 ${
-                isDark ? 'bg-[#0058FF]/25 text-[#38BDF8]' : 'bg-[#0058FF]/10 text-[#0058FF]'
-              }`}>2</span>
-              <span>Achită <strong className="text-[var(--text-main)]">20 RON Taxă de Timbru</strong> pe Ghișeul.ro la Judecătorie.</span>
-            </div>
-            <div className={`flex items-start gap-3 p-2.5 rounded-[12px] border ${
-              isDark ? 'bg-[#131620] border-white/[0.04]' : 'bg-[#F9FAFB] border-gray-100'
-            }`}>
-              <span className={`w-5 h-5 rounded-full font-bold text-xs flex items-center justify-center flex-shrink-0 ${
-                isDark ? 'bg-[#0058FF]/25 text-[#38BDF8]' : 'bg-[#0058FF]/10 text-[#0058FF]'
-              }`}>3</span>
-              <span>Trimite PDF-ul + chitanța de 20 lei pe email către arhiva Judecătoriei.</span>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      {/* Interactive OCR Review & Correction Sheet Modal */}
-      <OcrReviewModal
-        isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
-        extractedData={reviewData}
-        compressionStats={compressionStats}
-        onConfirm={handleConfirmOcrData}
-      />
+      {/* Review Modal for OCR Data Validation */}
+      {isReviewModalOpen && reviewData && (
+        <OcrReviewModal 
+          isOpen={isReviewModalOpen}
+          extractedData={reviewData}
+          compressionStats={compressionStats}
+          onClose={() => setIsReviewModalOpen(false)}
+          onConfirm={handleConfirmOcrData}
+        />
+      )}
 
     </div>
   );

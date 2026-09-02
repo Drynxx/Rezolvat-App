@@ -9,66 +9,26 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Light Theme Variables */
+/* Luxury macOS Sequoia & Revolut Obsidian Glass Tokens */
 :root {
-  --bg-main: #FFFFFF;
-  --panel-bg: #FFFFFF;
-  --panel-bg-nested: #F9FAFB;
-  --panel-border: #E5E7EB;
-  --panel-border-nested: #F3F4F6;
-  --panel-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
-  
-  --text-main: #111827;
-  --text-muted: #6B7280;
-  --text-subtle: #9CA3AF;
-  
-  --primary-blue: #0058FF;
-  --primary-blue-hover: #0047D4;
-  --primary-tint: rgba(0, 88, 255, 0.08);
-  
-  --fine-coral: #E11D48;
-  --fine-glow: none;
-  
-  --ring-track: #F3F4F6;
-  --ring-stroke: #0058FF;
-  --ring-glow: none;
-  
-  --btn-scan-shadow: 0 4px 14px rgba(0, 88, 255, 0.25);
-  --btn-scan-border: transparent;
-  
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-border: #E5E7EB;
-}
-
-/* Dark-Depth Luxury Theme Variables */
-:root.dark {
-  --bg-main: #0A0E17;
-  --panel-bg: #1C1F2B;
-  --panel-bg-nested: #131620;
+  --bg-main: #080B11;
+  --panel-bg: rgba(15, 23, 42, 0.45);
+  --panel-bg-nested: rgba(15, 23, 42, 0.6);
   --panel-border: rgba(255, 255, 255, 0.08);
-  --panel-border-nested: rgba(255, 255, 255, 0.05);
-  --panel-shadow: 0px 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  --panel-border-hover: rgba(255, 255, 255, 0.16);
+  --panel-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.12);
   
-  --text-main: #FFFFFF;
-  --text-muted: #A0A0A0;
-  --text-subtle: #6B7280;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-subtle: #64748B;
   
-  --primary-blue: #0058FF;
-  --primary-blue-hover: #0047D4;
-  --primary-tint: rgba(0, 88, 255, 0.2);
+  --cyan-accent: #06B6D4;
+  --cyan-glow: #38BDF8;
+  --emerald-accent: #10B981;
+  --emerald-glow: #34D399;
   
-  --fine-coral: #FFB7B2;
-  --fine-glow: 0 0 14px rgba(255, 183, 178, 0.45);
-  
-  --ring-track: #1C1F2B;
-  --ring-stroke: url(#illuminatedRingGrad);
-  --ring-glow: drop-shadow(0 0 12px rgba(56, 189, 248, 0.45));
-  
-  --btn-scan-shadow: 0 0 25px -4px rgba(0, 88, 255, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-  --btn-scan-border: rgba(56, 189, 248, 0.4);
-  
-  --nav-bg: rgba(10, 14, 23, 0.95);
-  --nav-border: rgba(255, 255, 255, 0.08);
+  --btn-primary-grad: linear-gradient(135deg, #06B6D4 0%, #6366F1 50%, #4F46E5 100%);
+  --btn-primary-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);
 }
 
 body {
@@ -79,38 +39,75 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  selection-background-color: rgba(6, 182, 212, 0.3);
+  selection-color: #A5F3FC;
 }
 
-/* Adaptive Panel Classes */
-.app-panel {
-  background-color: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 24px;
-  box-shadow: var(--panel-shadow);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+/* Glass Bento Card Tokens */
+.glass-card {
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.app-panel-nested {
-  background-color: var(--panel-bg-nested);
-  border: 1px solid var(--panel-border-nested);
-  border-radius: 14px;
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* Adaptive Fine Value */
-.fine-value-coral {
-  color: var(--fine-coral);
-  text-shadow: var(--fine-glow);
+.glass-card-nested {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
 }
 
-/* Adaptive Primary Button */
+/* Luxury Buttons */
 .btn-primary-action {
-  background-color: var(--primary-blue);
-  box-shadow: var(--btn-scan-shadow);
-  border: 1px solid var(--btn-scan-border);
+  background: linear-gradient(135deg, #06B6D4 0%, #6366F1 50%, #4F46E5 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Hide scrollbars */
+.btn-primary-action:hover {
+  opacity: 0.95;
+  box-shadow: 0 12px 30px rgba(6, 182, 212, 0.35);
+}
+
+.btn-primary-action:active {
+  transform: scale(0.98);
+}
+
+.btn-glass-secondary {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #CBD5E1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 500;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-glass-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Glow Utilities */
+.glow-cyan {
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.35);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+}
+
+/* Hide scrollbars elegantly */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
