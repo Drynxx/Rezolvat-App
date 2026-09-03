@@ -4,12 +4,12 @@ export interface OcrExtractionResult {
   data: ProcesVerbalExtractedData;
   confidenceScore: number;
   processingTimeMs: number;
-  source: 'gemini-2.0-flash' | 'client-ocr-fallback';
+  source: 'gemini-3.6-flash' | 'gemini-2.0-flash' | 'client-ocr-fallback';
 }
 
 /**
  * Strict Extraction Function for Romanian Traffic / Parking Tickets
- * Calls Gemini 2.0 Flash Vision or uses local heuristic extraction.
+ * Calls Gemini 3.6 Flash Vision or uses local heuristic extraction.
  */
 export async function extractProcesVerbalFromImage(
   base64Image: string,
@@ -21,7 +21,7 @@ export async function extractProcesVerbalFromImage(
   if (apiKey && apiKey.length > 10) {
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -67,7 +67,7 @@ Extrage toate câmpurile în format JSON valid:
             data: parsed,
             confidenceScore: 94,
             processingTimeMs: Math.round(performance.now() - startTime),
-            source: 'gemini-2.0-flash'
+            source: 'gemini-3.6-flash'
           };
         }
       }

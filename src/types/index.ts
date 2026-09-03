@@ -78,3 +78,53 @@ export interface SampleTicket {
   badgeText: string;
   data: ProcesVerbalExtractedData;
 }
+
+export type AutoDoxDocType = 'seller_ci' | 'buyer_ci' | 'vehicle_talon' | 'auto_detect';
+
+export interface AutoDoxExtractedCi {
+  fullName: string;
+  cnp: string;
+  ciSeries: string;
+  ciNumber: string;
+  county: string;
+  city: string;
+  street: string;
+  number: string;
+  block?: string;
+  staircase?: string;
+  floor?: string;
+  apartment?: string;
+  postalCode?: string;
+  isCnpValid?: boolean;
+}
+
+export interface AutoDoxExtractedVehicle {
+  make: string;
+  type: string;
+  vin: string;
+  engineSerial?: string;
+  displacementCm3?: number;
+  maxMassTons?: number;
+  plateNumber?: string;
+  civSeries?: string;
+  firstRegYear?: number;
+  euroNorm?: string;
+  isVinValid?: boolean;
+}
+
+export interface AutoDoxScanResult {
+  docType: AutoDoxDocType;
+  ciData?: AutoDoxExtractedCi;
+  vehicleData?: AutoDoxExtractedVehicle;
+  detectedOffice?: {
+    name: string;
+    cifSiruta: string;
+    address: string;
+    contact: string;
+  };
+  confidenceScore: number;
+  processingTimeMs: number;
+  tokensUsedEstimate: number;
+  source: 'gemini-3.6-flash' | 'gemini-2.0-flash' | 'client-ocr-fallback';
+}
+

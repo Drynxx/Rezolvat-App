@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileCheck, CheckCircle2, Car, Download, Edit3, ShieldCheck, Sparkles, Clock, AlertTriangle } from 'lucide-react';
+import { FileCheck, CheckCircle2, Car, Download, Edit3, ShieldCheck, Sparkles, Clock, AlertTriangle, Camera, Zap } from 'lucide-react';
 import { AutoDoxEditorModal } from './AutoDoxEditorModal';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -61,8 +61,8 @@ export const AutoDoxModule: React.FC = () => {
               <div className={`p-2.5 rounded-[12px] border flex items-center gap-2 text-xs ${
                 isDark ? 'bg-[#131620] border-white/[0.04] text-[#D1D5DB]' : 'bg-[#F9FAFB] border-gray-100 text-[#374151]'
               }`}>
-                <Clock className="w-4 h-4 text-[#38BDF8] flex-shrink-0" />
-                <span className="font-medium text-[11px]">Salvare 3 ore la cozi</span>
+                <Zap className="w-4 h-4 text-[#38BDF8] flex-shrink-0" />
+                <span className="font-medium text-[11px]">AI Vision (~390 tokens)</span>
               </div>
             </div>
           </div>
@@ -74,8 +74,18 @@ export const AutoDoxModule: React.FC = () => {
                 isDark ? 'btn-primary-action' : ''
               }`}
             >
-              <Edit3 className="w-4 h-4 text-white" />
-              <span>Completează / Editează Model 2026 ITL 054</span>
+              <Camera className="w-4 h-4 text-white" />
+              <span>Scanează Actele cu AI (Gemini Flash)</span>
+            </button>
+
+            <button
+              onClick={() => setIsEditorOpen(true)}
+              className={`w-full py-3 px-6 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer text-xs font-semibold border ${
+                isDark ? 'bg-[#131620] border-white/[0.08] text-[var(--text-muted)] hover:text-white' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Deschide Formularul Model 2026</span>
             </button>
           </div>
         </div>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Car, User, FileText, Download, RefreshCw, Sparkles, Building } from 'lucide-react';
+import { X, Check, Car, User, FileText, Download, RefreshCw, Sparkles, Building, Camera, Zap, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateItl054BundlePdf, ITL054DataPayload, numberToRomanianWords } from '../../lib/pdf/itl054-generator';
+import { AutoDoxScannerModal } from './AutoDoxScannerModal';
+import { AutoDoxDocType, AutoDoxScanResult } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 
 interface AutoDoxEditorModalProps {
@@ -13,6 +15,10 @@ interface AutoDoxEditorModalProps {
 export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, onClose }) => {
   const { isDark } = useTheme();
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
+  const [scannerDocType, setScannerDocType] = useState<AutoDoxDocType>('seller_ci');
+  const [scannedBadges, setScannedBadges] = useState<{ seller?: boolean; buyer?: boolean; vehicle?: boolean }>({});
+  const [scanStatusMessage, setScanStatusMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<ITL054DataPayload>({
     sellerFiscalOrg: {
@@ -101,6 +107,97 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
     }));
   };
 
+  const handleApplyScanData = (result: AutoDoxScanResult) => {
+    if (result.ciData) {
+      const ci = result.ciData;
+      if (result.docType === 'seller_ci' || (!scannedBadges.seller && result.docType === 'auto_detect')) {
+        setFormData((prev) => ({
+          ...prev,
+          seller: {
+            ...prev.seller,
+            fullName: ci.fullName || prev.seller.fullName,
+            cnp: ci.cnp || prev.seller.cnp,
+            ciSeries: ci.ciSeries || prev.seller.ciSeries,
+            ciNumber: ci.ciNumber || prev.seller.ciNumber,
+            county: ci.county || prev.seller.county,
+            city: ci.city || prev.seller.city,
+            street: ci.street || prev.seller.street,
+            number: ci.number || prev.seller.number,
+            block: ci.block || prev.seller.block,
+            staircase: ci.staircase || prev.seller.staircase,
+            floor: ci.floor || prev.seller.floor,
+            apartment: ci.apartment || prev.seller.apartment,
+            postalCode: ci.postalCode || prev.seller.postalCode,
+          },
+          sellerFiscalOrg: result.detectedOffice
+            ? {
+                ...prev.sellerFiscalOrg,
+                name: result.detectedOffice.name,
+                cifSiruta: result.detectedOffice.cifSiruta,
+                address: result.detectedOffice.address,
+                contact: result.detectedOffice.contact,
+              }
+            : prev.sellerFiscalOrg,
+        }));
+        setScannedBadges((prev) => ({ ...prev, seller: true }));
+        setScanStatusMessage(`Vânzător extras prin Gemini Flash (${result.processingTimeMs}ms • ~${result.tokensUsedEstimate} tk)`);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          buyer: {
+            ...prev.buyer,
+            fullName: ci.fullName || prev.buyer.fullName,
+            cnp: ci.cnp || prev.buyer.cnp,
+            ciSeries: ci.ciSeries || prev.buyer.ciSeries,
+            ciNumber: ci.ciNumber || prev.buyer.ciNumber,
+            county: ci.county || prev.buyer.county,
+            city: ci.city || prev.buyer.city,
+            street: ci.street || prev.buyer.street,
+            number: ci.number || prev.buyer.number,
+            block: ci.block || prev.buyer.block,
+            staircase: ci.staircase || prev.buyer.staircase,
+            floor: ci.floor || prev.buyer.floor,
+            apartment: ci.apartment || prev.buyer.apartment,
+            postalCode: ci.postalCode || prev.buyer.postalCode,
+          },
+          buyerFiscalOrg: result.detectedOffice
+            ? {
+                ...prev.buyerFiscalOrg,
+                name: result.detectedOffice.name,
+                cifSiruta: result.detectedOffice.cifSiruta,
+                address: result.detectedOffice.address,
+                contact: result.detectedOffice.contact,
+              }
+            : prev.buyerFiscalOrg,
+        }));
+        setScannedBadges((prev) => ({ ...prev, buyer: true }));
+        setScanStatusMessage(`Cumpărător extras prin Gemini Flash (${result.processingTimeMs}ms • ~${result.tokensUsedEstimate} tk)`);
+      }
+    }
+
+    if (result.vehicleData) {
+      const v = result.vehicleData;
+      setFormData((prev) => ({
+        ...prev,
+        vehicle: {
+          ...prev.vehicle,
+          make: v.make || prev.vehicle.make,
+          type: v.type || prev.vehicle.type,
+          vin: v.vin || prev.vehicle.vin,
+          engineSerial: v.engineSerial || prev.vehicle.engineSerial,
+          displacementCm3: v.displacementCm3 || prev.vehicle.displacementCm3,
+          maxMassTons: v.maxMassTons || prev.vehicle.maxMassTons,
+          plateNumber: v.plateNumber || prev.vehicle.plateNumber,
+          civSeries: v.civSeries || prev.vehicle.civSeries,
+          firstRegYear: v.firstRegYear || prev.vehicle.firstRegYear,
+          euroNorm: v.euroNorm || prev.vehicle.euroNorm,
+        },
+      }));
+      setScannedBadges((prev) => ({ ...prev, vehicle: true }));
+      setScanStatusMessage(`Date vehicul extrase prin Gemini Flash (${result.processingTimeMs}ms • ~${result.tokensUsedEstimate} tk)`);
+    }
+  };
+
   const handleDownload = async () => {
     try {
       setIsGenerating(true);
@@ -171,14 +268,91 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
 
           {/* Form Content */}
           <div className="p-5 md:p-6 overflow-y-auto flex flex-col gap-6 text-xs">
+
+            {/* AI Assistant Quick Scan Banner */}
+            <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+              isDark ? 'bg-[#0058FF]/10 border-[#38BDF8]/30' : 'bg-blue-50/80 border-blue-200'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  isDark ? 'bg-[#0058FF]/30 text-[#38BDF8]' : 'bg-[#0058FF]/15 text-[#0058FF]'
+                }`}>
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-xs text-[var(--text-main)] flex items-center gap-2">
+                    <span>Auto-Completare Inteligentă cu Gemini Flash Vision</span>
+                    <span className="text-[9px] px-2 py-0.5 rounded-full font-bold bg-[#10B981]/20 text-[#34D399]">
+                      Low-Token ~390 tk
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-muted)] mt-0.5">
+                    Scanează buletinele și talonul auto pentru completarea instantă a cartușelor A, B, C, D.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setScannerDocType('auto_detect');
+                  setIsScannerOpen(true);
+                }}
+                className="w-full sm:w-auto px-4 py-2 bg-[#0058FF] hover:bg-[#0047D4] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm flex-shrink-0"
+              >
+                <Camera className="w-3.5 h-3.5" />
+                <span>Deschide Scanner AI</span>
+              </button>
+            </div>
+
+            {scanStatusMessage && (
+              <div className={`p-2.5 rounded-xl border flex items-center justify-between text-xs font-medium ${
+                isDark ? 'bg-[#10B981]/10 border-[#10B981]/30 text-[#34D399]' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>{scanStatusMessage}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setScanStatusMessage(null)}
+                  className="text-xs opacity-60 hover:opacity-100"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
             
             {/* Section 1: Vânzător */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-[var(--panel-border)]">
-                <User className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
-                <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
-                  (1) Persoana care înstrăinează (Vânzător)
-                </h3>
+              <div className="flex items-center justify-between pb-1.5 border-b border-[var(--panel-border)]">
+                <div className="flex items-center gap-2">
+                  <User className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
+                  <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
+                    (1) Persoana care înstrăinează (Vânzător)
+                  </h3>
+                  {scannedBadges.seller && (
+                    <span className="text-[9px] font-bold text-[#34D399] bg-[#10B981]/15 px-2 py-0.5 rounded-full">
+                      ✓ Scanat AI
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScannerDocType('seller_ci');
+                    setIsScannerOpen(true);
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isDark
+                      ? 'bg-[#0058FF]/20 text-[#38BDF8] border border-[#38BDF8]/30 hover:bg-[#0058FF]/30'
+                      : 'bg-[#0058FF]/10 text-[#0058FF] hover:bg-[#0058FF]/15'
+                  }`}
+                >
+                  <Camera className="w-3 h-3" />
+                  <span>Scanează CI Vânzător</span>
+                </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -263,11 +437,34 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
 
             {/* Section 2: Cumpărător */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-[var(--panel-border)]">
-                <User className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
-                <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
-                  (2) Persoana care dobândește (Cumpărător)
-                </h3>
+              <div className="flex items-center justify-between pb-1.5 border-b border-[var(--panel-border)]">
+                <div className="flex items-center gap-2">
+                  <User className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
+                  <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
+                    (2) Persoana care dobândește (Cumpărător)
+                  </h3>
+                  {scannedBadges.buyer && (
+                    <span className="text-[9px] font-bold text-[#34D399] bg-[#10B981]/15 px-2 py-0.5 rounded-full">
+                      ✓ Scanat AI
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScannerDocType('buyer_ci');
+                    setIsScannerOpen(true);
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isDark
+                      ? 'bg-[#0058FF]/20 text-[#38BDF8] border border-[#38BDF8]/30 hover:bg-[#0058FF]/30'
+                      : 'bg-[#0058FF]/10 text-[#0058FF] hover:bg-[#0058FF]/15'
+                  }`}
+                >
+                  <Camera className="w-3 h-3" />
+                  <span>Scanează CI Cumpărător</span>
+                </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -352,11 +549,34 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
 
             {/* Section 3: Obiectul Contractului (Vehicul) */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-[var(--panel-border)]">
-                <Car className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
-                <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
-                  (3) Obiectul Contractului (Datele Vehiculului din CIV / Talon)
-                </h3>
+              <div className="flex items-center justify-between pb-1.5 border-b border-[var(--panel-border)]">
+                <div className="flex items-center gap-2">
+                  <Car className={`w-4 h-4 ${isDark ? "text-[#38BDF8]" : "text-[#0058FF]"}`} />
+                  <h3 className="font-bold text-[var(--text-main)] uppercase tracking-wider text-[11px]">
+                    (3) Obiectul Contractului (Datele Vehiculului din CIV / Talon)
+                  </h3>
+                  {scannedBadges.vehicle && (
+                    <span className="text-[9px] font-bold text-[#34D399] bg-[#10B981]/15 px-2 py-0.5 rounded-full">
+                      ✓ Scanat AI
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScannerDocType('vehicle_talon');
+                    setIsScannerOpen(true);
+                  }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    isDark
+                      ? 'bg-[#0058FF]/20 text-[#38BDF8] border border-[#38BDF8]/30 hover:bg-[#0058FF]/30'
+                      : 'bg-[#0058FF]/10 text-[#0058FF] hover:bg-[#0058FF]/15'
+                  }`}
+                >
+                  <Camera className="w-3 h-3" />
+                  <span>Scanează Talon Auto</span>
+                </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -546,6 +766,14 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
 
         </motion.div>
       </div>
+
+      {/* AutoDox Low-Token AI Scanner Modal */}
+      <AutoDoxScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        initialDocType={scannerDocType}
+        onApplyData={handleApplyScanData}
+      />
     </AnimatePresence>
   );
 };
