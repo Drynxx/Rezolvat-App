@@ -37,11 +37,21 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({ onOpenDisclaimer, un
         </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.02rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-pure)' }}>
-              Rezolvat
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.08rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-pure)' }}>
+              ZIRO
             </span>
+            <span style={{
+              fontSize: '0.62rem',
+              fontWeight: 700,
+              padding: '1px 6px',
+              borderRadius: '999px',
+              background: 'rgba(56, 189, 248, 0.12)',
+              color: '#38BDF8',
+              border: '1px solid rgba(56, 189, 248, 0.25)',
+              textTransform: 'uppercase'
+            }}>RO</span>
           </div>
-          <p style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>Asistent Juridic & Documente</p>
+          <p style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>Amenzi & Acte Auto</p>
         </div>
       </div>
 

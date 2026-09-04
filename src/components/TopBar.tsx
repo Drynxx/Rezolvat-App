@@ -25,81 +25,98 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div className="flex justify-between items-center px-4 md:px-6 h-16 w-full max-w-6xl mx-auto">
 
         {/* Left: Brand Logo & Title */}
-        <div className="flex items-center gap-2.5">
-          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${isDark
+        <div
+          onClick={() => setActiveTab('autodox')}
+          className="flex items-center gap-2.5 cursor-pointer select-none group"
+        >
+          <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${isDark
             ? 'bg-gradient-to-br from-[#0058FF]/25 to-[#38BDF8]/25 border border-[#38BDF8]/30 text-[#38BDF8]'
             : 'bg-[#0058FF]/10 text-[#0058FF]'
             }`}>
             <Shield className="w-4 h-4" />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-lg font-bold text-[var(--text-main)] tracking-tight">
-              Rezolvat
-            </span>
-            <span className={`px-1.5 py-0.5 text-[9px] font-bold tracking-wider rounded-full uppercase ${isDark
-              ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20'
-              : 'text-[#0058FF] bg-[#0058FF]/10'
-              }`}>
-              RO
-            </span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 leading-tight">
+              <span className="text-lg font-black tracking-tight text-[var(--text-main)]">
+                ZIRO
+              </span>
+              <span className={`px-1.5 py-0.5 text-[9px] font-bold tracking-wider rounded-full uppercase ${isDark
+                ? 'text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20'
+                : 'text-[#0058FF] bg-[#0058FF]/10'
+                }`}>
+                RO
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Center: Desktop Navigation Tabs */}
+        {/* Center: Desktop Navigation Tabs (AutoDox in Focus, others in-progress) */}
         <nav className={`hidden md:flex items-center gap-1.5 p-1.5 rounded-full border transition-colors ${isDark
           ? 'bg-[#1C1F2B] border-white/[0.08] shadow-inner'
           : 'bg-[#F9FAFB] border-[#E5E7EB]'
           }`}>
-          <button
-            onClick={() => setActiveTab('amendaguard')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${activeTab === 'amendaguard'
-              ? 'bg-[#0058FF] text-white shadow-sm'
-              : isDark
-                ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
-                : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
-              }`}
-          >
-            <Scale className="w-4 h-4" />
-            <span>Amenzi</span>
-          </button>
-
+          {/* Primary: AutoDox */}
           <button
             onClick={() => setActiveTab('autodox')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${activeTab === 'autodox'
-              ? 'bg-[#0058FF] text-white shadow-sm'
+            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-bold transition-all cursor-pointer ${activeTab === 'autodox'
+              ? 'bg-[#0058FF] text-white shadow-[0_0_12px_rgba(0,88,255,0.4)]'
               : isDark
                 ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
                 : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
               }`}
           >
             <Car className="w-4 h-4" />
-            <span>AutoDox</span>
+            <span>Auto</span>
+            <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider ${activeTab === 'autodox' ? 'bg-white/20 text-white' : 'bg-[#0058FF]/15 text-[#38BDF8]'
+              }`}>Activ</span>
           </button>
 
+          {/* In Progress: Amenzi */}
+          <button
+            onClick={() => setActiveTab('amendaguard')}
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium transition-all cursor-pointer ${activeTab === 'amendaguard'
+              ? isDark ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-200'
+              : 'opacity-65 hover:opacity-100 text-[var(--text-muted)]'
+              }`}
+            title="Modul în dezvoltare (În lucru)"
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>Amenzi</span>
+            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              Curând
+            </span>
+          </button>
+
+          {/* In Progress: ANPC */}
           <button
             onClick={() => setActiveTab('anpc')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${activeTab === 'anpc'
-              ? 'bg-[#0058FF] text-white shadow-sm'
-              : isDark
-                ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
-                : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium transition-all cursor-pointer ${activeTab === 'anpc'
+              ? isDark ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-200'
+              : 'opacity-65 hover:opacity-100 text-[var(--text-muted)]'
               }`}
+            title="Modul în dezvoltare (În lucru)"
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-3.5 h-3.5" />
             <span>ANPC</span>
+            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              Curând
+            </span>
           </button>
 
+          {/* In Progress: Ghișeu */}
           <button
             onClick={() => setActiveTab('ghiseu')}
-            className={`flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer ${activeTab === 'ghiseu' || activeTab === 'pricing'
-              ? 'bg-[#0058FF] text-white shadow-sm'
-              : isDark
-                ? 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
-                : 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+            className={`flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium transition-all cursor-pointer ${activeTab === 'ghiseu' || activeTab === 'pricing'
+              ? isDark ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-200'
+              : 'opacity-65 hover:opacity-100 text-[var(--text-muted)]'
               }`}
+            title="Modul în dezvoltare (În lucru)"
           >
-            <Landmark className="w-4 h-4" />
+            <Landmark className="w-3.5 h-3.5" />
             <span>Ghișeu</span>
+            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              Curând
+            </span>
           </button>
         </nav>
 

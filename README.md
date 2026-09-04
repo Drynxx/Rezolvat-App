@@ -1,6 +1,6 @@
-# Birocratie Zero
+# ZIRO: Amenzi & Acte Auto
 
-Digital administrative assistant and official document automation platform.
+Digital legal assistant and official document automation platform (amenzi rutiere O.G. 2/2001, contracte auto ITL 054, petiții ANPC, ghișeu digital).
 
 ## Getting Started
 

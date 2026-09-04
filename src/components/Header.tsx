@@ -36,11 +36,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-                REZOLVAT
+                ZIRO
               </span>
               <span className="badge badge-emerald" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>RO v1.0</span>
             </div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1 }}>Asistent Juridic & Dosare Digitale</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1 }}>Amenzi & Acte Auto</p>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
             style={{ fontSize: '0.88rem', padding: '0.55rem 1rem' }}
           >
             <Car size={16} />
-            <span>AutoDox (5x)</span>
+            <span>Auto</span>
           </button>
 
           <button

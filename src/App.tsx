@@ -7,6 +7,7 @@ import { AmendaGuardModule } from './components/AmendaGuard/AmendaGuardModule';
 import { AutoDoxModule } from './components/AutoDox/AutoDoxModule';
 import { AnpcModule } from './components/ANPC/AnpcModule';
 import { GhiseuNavigatorModule } from './components/GhiseuNavigator/GhiseuNavigatorModule';
+import { WorkInProgressModule } from './components/WorkInProgressModule';
 import { AppTab, ProcesVerbalExtractedData } from './types';
 import { ProcessedImageResult } from './lib/ocr/compression';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -14,9 +15,10 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 function MainAppContent() {
   const { isDark } = useTheme();
-  const [activeTab, setActiveTab] = useState<AppTab>('amendaguard');
+  const [activeTab, setActiveTab] = useState<AppTab>('autodox');
   const [isDisclaimerOpen, setIsDisclaimerOpen] = useState<boolean>(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState<boolean>(false);
+  const [autoDoxScanTrigger, setAutoDoxScanTrigger] = useState<number>(0);
   const [scannedPayload, setScannedPayload] = useState<{
     data: ProcesVerbalExtractedData;
     stats: ProcessedImageResult;
@@ -25,7 +27,12 @@ function MainAppContent() {
   const handleScanComplete = (data: ProcesVerbalExtractedData, stats: ProcessedImageResult) => {
     setScannedPayload({ data, stats });
     setIsScanModalOpen(false);
-    setActiveTab('amendaguard');
+    setActiveTab('autodox');
+  };
+
+  const handleQuickScan = () => {
+    setActiveTab('autodox');
+    setAutoDoxScanTrigger((prev) => prev + 1);
   };
 
   return (
@@ -44,7 +51,7 @@ function MainAppContent() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenDisclaimer={() => setIsDisclaimerOpen(true)} 
-        onQuickScan={() => setIsScanModalOpen(true)}
+        onQuickScan={handleQuickScan}
         unreadCount={1}
       />
 
@@ -59,15 +66,16 @@ function MainAppContent() {
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full"
           >
-            {activeTab === 'amendaguard' && (
-              <AmendaGuardModule 
-                onOpenScanModal={() => setIsScanModalOpen(true)} 
-                scannedData={scannedPayload}
+            {activeTab === 'autodox' && (
+              <AutoDoxModule openEditorTrigger={autoDoxScanTrigger} />
+            )}
+            {(activeTab === 'amendaguard' || activeTab === 'anpc' || activeTab === 'ghiseu' || activeTab === 'pricing') && (
+              <WorkInProgressModule
+                activeTab={activeTab}
+                onGoToAutoDox={() => setActiveTab('autodox')}
+                onOpenDisclaimer={() => setIsDisclaimerOpen(true)}
               />
             )}
-            {activeTab === 'autodox' && <AutoDoxModule />}
-            {activeTab === 'anpc' && <AnpcModule />}
-            {activeTab === 'ghiseu' && <GhiseuNavigatorModule />}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -76,7 +84,7 @@ function MainAppContent() {
       <FloatingBottomDock 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
-        onQuickScan={() => setIsScanModalOpen(true)}
+        onQuickScan={handleQuickScan}
       />
 
       {/* 4. Fullscreen Camera Viewfinder Modal */}

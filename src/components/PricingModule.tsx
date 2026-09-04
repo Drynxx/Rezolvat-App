@@ -17,7 +17,7 @@ export const PricingModule = () => {
       isPopular: true
     },
     {
-      name: 'AutoDox (5x)',
+      name: 'Auto',
       price: '39',
       period: 'tranzacție',
       desc: 'Setul de 5 exemplare ITL 054 + Cerere DGPCI.',
@@ -46,7 +46,7 @@ export const PricingModule = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '0 16px' }}>
-      
+
       <div className="rev-card" style={{ textAlign: 'center' }}>
         <span className="rev-badge rev-badge-cyan" style={{ marginBottom: '8px' }}>Fără Costuri Ascunse</span>
         <h3 style={{ fontSize: '1.3rem', color: 'var(--text-pure)', marginBottom: '4px' }}>Tarife Transparente</h3>
@@ -69,7 +69,7 @@ export const PricingModule = () => {
               <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-pure)' }}>{p.name}</span>
               {p.isPopular && <span className="rev-badge rev-badge-cyan">POPULAR</span>}
             </div>
-            
+
             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>{p.desc}</p>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '10px' }}>

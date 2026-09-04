@@ -41,7 +41,7 @@ export const LegalDisclaimerModal: React.FC<LegalDisclaimerModalProps> = ({ isOp
               <span>Declinare a Răspunderii (Protecție Legea nr. 51/1995)</span>
             </div>
             <p className="leading-relaxed text-xs text-[#D1D5DB]">
-              <strong>Rezolvat</strong> este o platformă tehnologică independentă operată sub codurile CAEN <strong>6201</strong> (Activități de realizare a software-ului) și <strong>6311</strong> (Prelucrarea datelor și administrarea paginilor web). Platforma nu constituie o societate de avocați, nu acordă consultanță juridică personalizată și nu înlocuiește serviciile unui avocat autorizat conform Legii nr. 51/1995.
+              <strong>ZIRO</strong> este o platformă tehnologică independentă operată sub codurile CAEN <strong>6201</strong> (Activități de realizare a software-ului) și <strong>6311</strong> (Prelucrarea datelor și administrarea paginilor web). Platforma nu constituie o societate de avocați, nu acordă consultanță juridică personalizată și nu înlocuiește serviciile unui avocat autorizat conform Legii nr. 51/1995.
             </p>
           </div>
 
