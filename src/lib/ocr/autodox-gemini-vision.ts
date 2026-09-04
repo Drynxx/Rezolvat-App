@@ -2,45 +2,51 @@ import { AutoDoxDocType, AutoDoxExtractedCi, AutoDoxExtractedVehicle, AutoDoxSca
 
 /**
  * Romanian CNP (Cod Numeric Personal) Mathematical Checksum Validation
- * Uses national standard algorithm (control key: 2791493527914 % 11)
+ * Uses national standard algorithm (control key: 279146358279)
  */
 export function validateRomanianCnp(cnp: string): boolean {
-  if (!cnp || cnp.length !== 13 || !/^\d{13}$/.test(cnp)) {
-    return false;
-  }
+  if (!cnp || typeof cnp !== 'string') return false;
+  const clean = cnp.trim();
+  if (clean.length !== 13 || !/^\d{13}$/.test(clean)) return false;
+
   const controlKey = [2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9];
   let sum = 0;
   for (let i = 0; i < 12; i++) {
-    sum += parseInt(cnp[i], 10) * controlKey[i];
+    sum += parseInt(clean[i], 10) * controlKey[i];
   }
+
   const remainder = sum % 11;
   const expectedCheckDigit = remainder === 10 ? 1 : remainder;
-  return expectedCheckDigit === parseInt(cnp[12], 10);
+  const actualCheckDigit = parseInt(clean[12], 10);
+
+  return expectedCheckDigit === actualCheckDigit;
 }
 
 /**
- * Romanian Vehicle VIN (Serie Șasiu) format validation
- * Standard ISO 3779: exactly 17 alphanumeric characters, excludes I, O, Q
+ * Vehicle Identification Number (VIN) 17-character ISO 3779 standard validation
  */
 export function validateVin(vin: string): boolean {
-  if (!vin) return false;
-  const clean = vin.replace(/[\s-]/g, '').toUpperCase();
+  if (!vin || typeof vin !== 'string') return false;
+  const clean = vin.trim().toUpperCase().replace(/[\s-]/g, '');
+  // ISO 3779: Exactly 17 chars, no letters I, O, Q
   if (clean.length !== 17) return false;
+  if (/[IOQ]/.test(clean)) return false;
   return /^[A-HJ-NPR-Z0-9]{17}$/.test(clean);
 }
 
 /**
- * Romanian Municipal Tax Offices (DITL) Registry Lookup
- * Automatically infers DITL contact & SIRUTA code for Cartușele A, B, C, D
+ * Auto-resolves Romanian DITL / SPIT municipal tax offices by city and county
  */
-export function matchDitlOffice(
-  city?: string,
-  county?: string
-): { name: string; cifSiruta: string; address: string; contact: string } | null {
-  const normCity = (city || '').toLowerCase();
-  const normCounty = (county || '').toLowerCase();
+export function matchDitlOffice(city?: string, county?: string): {
+  name: string;
+  cifSiruta: string;
+  address: string;
+  contact: string;
+} | null {
+  const normCity = (city || '').toLowerCase().trim();
+  const normCounty = (county || '').toLowerCase().trim();
 
-  if (normCity.includes('sector 1') || (normCounty.includes('bucure') && normCity.includes('1'))) {
+  if (normCity.includes('sector 1') || (normCounty.includes('bucure') && normCity === '1')) {
     return {
       name: 'DITL Sector 1 București',
       cifSiruta: 'RO419204',
@@ -146,7 +152,8 @@ export function matchDitlOffice(
  */
 function buildCompactPrompt(docType: AutoDoxDocType): string {
   if (docType === 'seller_ci' || docType === 'buyer_ci') {
-    return `Ești un asistent fiscal român. Extrage datele din Cartea de Identitate (CI Română) în format JSON compact:
+    return `Ești un asistent fiscal român. Extrage datele din Cartea de Identitate (CI Română) în format JSON compact.
+REGULĂ STRICTĂ PRIVIND FIDELITATEA: Extrage EXCLUSIV caracterele tipărite și vizibile pe document. NU adăuga, presupune sau extrapola informații absente.
 {
   "fullName": string,
   "cnp": string (13 cifre),
@@ -165,27 +172,31 @@ function buildCompactPrompt(docType: AutoDoxDocType): string {
   }
 
   if (docType === 'vehicle_talon') {
-    return `Ești un inspector auto român. Extrage datele din Talon Auto (Certificat de Înmatriculare) sau CIV în JSON compact:
+    return `Ești un expert verificator auto din România. Extrage datele din Talon Auto (Certificat de Înmatriculare) sau CIV în JSON compact.
+REGULĂ STRICTĂ PRIVIND FIDELITATEA: Extrage EXCLUSIV caracterele vizibile în document, exact așa cum apar. NU adăuga, NU presupune, NU deduce și NU completa date care nu există fizic pe document.
+Pentru câmpul "type": preia strict textul de la rubrica D.2 (Tipul) sau D.3 (Denumirea comercială), exact cum este tipărit în document, fără să adaugi paranteze, versiuni sau interpretări personale.
 {
-  "make": string (D.1 Marca),
-  "type": string (D.3 Denumire comerciala/Tip),
+  "make": string (D.1 Marca exactă din document),
+  "type": string (D.2 Tipul sau D.3 Denumirea comercială exact cum este scrisă în document),
   "vin": string (E Nr identificare/Serie Sasiu - 17 caractere),
-  "engineSerial": string (P.5 Serie motor),
-  "displacementCm3": number (P.1 Capacitate cilindrica cm3),
-  "maxMassTons": number (F.1 Masa maxima tone),
-  "plateNumber": string (A Nr inmatriculare),
+  "engineSerial": string (P.5 Serie motor, doar dacă apare),
+  "displacementCm3": number (P.1 Capacitate cilindrică cm3),
+  "maxMassTons": number (F.1 Masa maximă tone),
+  "plateNumber": string (A Nr înmatriculare),
   "civSeries": string (Y Serie CIV),
-  "firstRegYear": number (B An fabricatie/inmatriculare),
-  "euroNorm": string (V.9 Clasa poluare ex Euro 6)
+  "firstRegYear": number (B An fabricație/înmatriculare),
+  "euroNorm": string (V.9 Clasa poluare, ex: Euro 6, sau șir gol dacă lipsește pe document)
 }`;
   }
 
   // Auto detect prompt
-  return `Clasifică documentul ('ci' sau 'talon') și extrage datele în JSON compact:
+  return `Ești un asistent de recunoaștere documente oficiale din România.
+REGULĂ STRICTĂ: Extrage EXCLUSIV caracterele vizibile în document. NU inventa sau adăuga date care nu există pe document.
+Clasifică documentul ('ci' sau 'talon') și extrage datele în JSON compact:
 {
   "detectedType": "ci" | "talon",
   "ci": { "fullName": string, "cnp": string, "ciSeries": string, "ciNumber": string, "county": string, "city": string, "street": string, "number": string, "block": string, "apartment": string },
-  "vehicle": { "make": string, "type": string, "vin": string, "engineSerial": string, "displacementCm3": number, "maxMassTons": number, "plateNumber": string, "civSeries": string, "firstRegYear": number, "euroNorm": string }
+  "vehicle": { "make": string, "type": string (exact ca pe document la D.2/D.3), "vin": string, "engineSerial": string, "displacementCm3": number, "maxMassTons": number, "plateNumber": string, "civSeries": string, "firstRegYear": number, "euroNorm": string }
 }`;
 }
 
@@ -203,189 +214,112 @@ export async function extractAutoDoxFromImage(
     (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
     (typeof window !== 'undefined' ? (window as any).__GEMINI_API_KEY__ : undefined);
 
-  if (apiKey && apiKey.length > 10) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
+  if (!apiKey || apiKey.length < 10) {
+    throw new Error('Cheia Gemini API lipsește sau este invalidă. Configurați VITE_GEMINI_API_KEY în .env.');
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { text: buildCompactPrompt(docType) },
               {
-                role: 'user',
-                parts: [
-                  { text: buildCompactPrompt(docType) },
-                  {
-                    inlineData: {
-                      data: base64Image,
-                      mimeType: mimeType,
-                    },
-                  },
-                ],
+                inlineData: {
+                  data: base64Image,
+                  mimeType: mimeType,
+                },
               },
             ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              temperature: 0.1,
-            },
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const jsonRes = await response.json();
-        const rawText = jsonRes?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (rawText) {
-          const parsed = JSON.parse(rawText);
-          const processingTimeMs = Math.round(performance.now() - startTime);
-
-          if (docType === 'seller_ci' || docType === 'buyer_ci' || parsed.detectedType === 'ci') {
-            const rawCi = parsed.ci || parsed;
-            const cnpValid = validateRomanianCnp(rawCi.cnp || '');
-            const ciData: AutoDoxExtractedCi = {
-              fullName: (rawCi.fullName || '').toUpperCase(),
-              cnp: rawCi.cnp || '',
-              ciSeries: (rawCi.ciSeries || '').toUpperCase(),
-              ciNumber: rawCi.ciNumber || '',
-              county: rawCi.county || '',
-              city: rawCi.city || '',
-              street: rawCi.street || '',
-              number: rawCi.number || '',
-              block: rawCi.block || '',
-              staircase: rawCi.staircase || '',
-              floor: rawCi.floor || '',
-              apartment: rawCi.apartment || '',
-              postalCode: rawCi.postalCode || '',
-              isCnpValid: cnpValid,
-            };
-
-            const detectedOffice = matchDitlOffice(ciData.city, ciData.county) || undefined;
-
-            return {
-              docType,
-              ciData,
-              detectedOffice,
-              confidenceScore: cnpValid ? 96 : 88,
-              processingTimeMs,
-              tokensUsedEstimate: 390,
-              source: 'gemini-3.6-flash',
-            };
-          }
-
-          if (docType === 'vehicle_talon' || parsed.detectedType === 'talon') {
-            const rawV = parsed.vehicle || parsed;
-            const vinValid = validateVin(rawV.vin || '');
-            const vehicleData: AutoDoxExtractedVehicle = {
-              make: (rawV.make || '').toUpperCase(),
-              type: rawV.type || '',
-              vin: (rawV.vin || '').toUpperCase().replace(/[\s-]/g, ''),
-              engineSerial: (rawV.engineSerial || '').toUpperCase(),
-              displacementCm3: Number(rawV.displacementCm3) || undefined,
-              maxMassTons: Number(rawV.maxMassTons) || undefined,
-              plateNumber: (rawV.plateNumber || '').toUpperCase(),
-              civSeries: (rawV.civSeries || '').toUpperCase(),
-              firstRegYear: Number(rawV.firstRegYear) || undefined,
-              euroNorm: rawV.euroNorm || 'Euro 6',
-              isVinValid: vinValid,
-            };
-
-            return {
-              docType,
-              vehicleData,
-              confidenceScore: vinValid ? 98 : 91,
-              processingTimeMs,
-              tokensUsedEstimate: 415,
-              source: 'gemini-3.6-flash',
-            };
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('Live Gemini Flash AutoDox OCR call failed, falling back to local heuristic parser:', err);
+          },
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.0,
+        },
+      }),
     }
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error('Gemini API Error:', response.status, errorBody);
+    throw new Error(`Eroare la procesarea documentului cu Gemini Flash (${response.status}). Vă rugăm să reîncercați.`);
   }
 
-  // Realistic fallback for offline / mock testing
-  await new Promise((r) => setTimeout(r, 620));
+  const jsonRes = await response.json();
+  const rawText = jsonRes?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!rawText) {
+    throw new Error('Nu s-au putut recunoaște date din imaginea furnizată. Asigurați-vă că documentul este clar și bine iluminat.');
+  }
+
+  const parsed = JSON.parse(rawText);
   const processingTimeMs = Math.round(performance.now() - startTime);
 
-  if (docType === 'vehicle_talon') {
-    return {
-      docType,
-      vehicleData: {
-        make: 'VOLKSWAGEN',
-        type: 'Golf VII (Trendline)',
-        vin: 'WVWZZZAUZHP104928',
-        engineSerial: 'CRBC129481',
-        displacementCm3: 1968,
-        maxMassTons: 1.85,
-        plateNumber: 'B 104 BZX',
-        civSeries: 'K910284',
-        firstRegYear: 2020,
-        euroNorm: 'Euro 6',
-        isVinValid: true,
-      },
-      confidenceScore: 95,
-      processingTimeMs,
-      tokensUsedEstimate: 380,
-      source: 'client-ocr-fallback',
-    };
-  }
-
-  if (docType === 'buyer_ci') {
+  if (docType === 'seller_ci' || docType === 'buyer_ci' || parsed.detectedType === 'ci') {
+    const rawCi = parsed.ci || parsed;
+    const cnpValid = validateRomanianCnp(rawCi.cnp || '');
     const ciData: AutoDoxExtractedCi = {
-      fullName: 'IONESCU ELENA ANDREEA',
-      cnp: '2920815125899',
-      ciSeries: 'KX',
-      ciNumber: '912048',
-      county: 'Cluj',
-      city: 'Cluj-Napoca',
-      street: 'Calea Florești',
-      number: '78',
-      block: 'B4',
-      staircase: '2',
-      floor: '4',
-      apartment: '22',
-      postalCode: '400120',
-      isCnpValid: true,
+      fullName: (rawCi.fullName || '').toUpperCase().trim(),
+      cnp: (rawCi.cnp || '').trim(),
+      ciSeries: (rawCi.ciSeries || '').toUpperCase().trim(),
+      ciNumber: (rawCi.ciNumber || '').trim(),
+      county: (rawCi.county || '').trim(),
+      city: (rawCi.city || '').trim(),
+      street: (rawCi.street || '').trim(),
+      number: (rawCi.number || '').trim(),
+      block: (rawCi.block || '').trim(),
+      staircase: (rawCi.staircase || '').trim(),
+      floor: (rawCi.floor || '').trim(),
+      apartment: (rawCi.apartment || '').trim(),
+      postalCode: (rawCi.postalCode || '').trim(),
+      isCnpValid: cnpValid,
     };
+
+    const detectedOffice = matchDitlOffice(ciData.city, ciData.county) || undefined;
+
     return {
       docType,
       ciData,
-      detectedOffice: matchDitlOffice('Cluj-Napoca', 'Cluj') || undefined,
-      confidenceScore: 97,
+      detectedOffice,
+      confidenceScore: cnpValid ? 98 : 88,
       processingTimeMs,
-      tokensUsedEstimate: 365,
-      source: 'client-ocr-fallback',
+      tokensUsedEstimate: jsonRes?.usageMetadata?.totalTokenCount || 390,
+      source: 'gemini-3.6-flash',
     };
   }
 
-  // Default: seller_ci or auto_detect
-  const ciData: AutoDoxExtractedCi = {
-    fullName: 'POPESCU MIHAI ALEXANDRU',
-    cnp: '1850412410021',
-    ciSeries: 'DP',
-    ciNumber: '491028',
-    county: 'București',
-    city: 'Sector 1',
-    street: 'Str. Dorobanți',
-    number: '34',
-    block: 'A2',
-    staircase: '1',
-    floor: '3',
-    apartment: '14',
-    postalCode: '010214',
-    isCnpValid: true,
-  };
+  if (docType === 'vehicle_talon' || parsed.detectedType === 'talon') {
+    const rawV = parsed.vehicle || parsed;
+    const vinValid = validateVin(rawV.vin || '');
+    const vehicleData: AutoDoxExtractedVehicle = {
+      make: (rawV.make || '').toUpperCase().trim(),
+      type: (rawV.type || '').trim(),
+      vin: (rawV.vin || '').toUpperCase().replace(/[\s-]/g, ''),
+      engineSerial: (rawV.engineSerial || '').toUpperCase().trim(),
+      displacementCm3: Number(rawV.displacementCm3) || undefined,
+      maxMassTons: Number(rawV.maxMassTons) || undefined,
+      plateNumber: (rawV.plateNumber || '').toUpperCase().trim(),
+      civSeries: (rawV.civSeries || '').toUpperCase().trim(),
+      firstRegYear: Number(rawV.firstRegYear) || undefined,
+      euroNorm: (rawV.euroNorm || '').trim(),
+      isVinValid: vinValid,
+    };
 
-  return {
-    docType,
-    ciData,
-    detectedOffice: matchDitlOffice('Sector 1', 'București') || undefined,
-    confidenceScore: 96,
-    processingTimeMs,
-    tokensUsedEstimate: 375,
-    source: 'client-ocr-fallback',
-  };
+    return {
+      docType,
+      vehicleData,
+      confidenceScore: vinValid ? 98 : 91,
+      processingTimeMs,
+      tokensUsedEstimate: jsonRes?.usageMetadata?.totalTokenCount || 415,
+      source: 'gemini-3.6-flash',
+    };
+  }
+
+  throw new Error('Tipul documentului nu a putut fi clasificat cu certitudine. Vă rugăm să specificați tipul documentului.');
 }

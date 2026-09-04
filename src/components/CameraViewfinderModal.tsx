@@ -89,7 +89,7 @@ export const CameraViewfinderModal: React.FC<CameraViewfinderModalProps> = ({
       onScanComplete(ocrResult.data, compressed);
     } catch (err: any) {
       console.error('Error during OCR processing:', err);
-      alert('A apărut o eroare la procesarea documentului. Încercați din nou.');
+      alert(err?.message || 'A apărut o eroare la procesarea documentului. Încercați din nou.');
     } finally {
       setIsProcessing(false);
       setStatusMessage('Cadrează Procesul-Verbal');

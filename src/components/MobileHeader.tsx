@@ -20,7 +20,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({ onOpenDisclaimer, un
       zIndex: 900,
       borderBottom: '1px solid var(--border-subtle)'
     }}>
-      
+
       {/* Brand Emblem */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <div style={{
@@ -38,7 +38,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({ onOpenDisclaimer, un
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.02rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-pure)' }}>
-              Birocrație<span style={{ color: 'var(--accent-cyan)' }}>Zero</span>
+              Rezolvat
             </span>
           </div>
           <p style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>Asistent Juridic & Documente</p>

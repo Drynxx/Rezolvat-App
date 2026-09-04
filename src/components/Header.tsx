@@ -16,10 +16,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="glass-panel" style={{ margin: '1rem 0 1.5rem 0', padding: '0.85rem 1.5rem', borderRadius: 'var(--radius-xl)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-        
+
         {/* Logo Brand */}
-        <div 
-          onClick={() => setActiveTab('amendaguard')} 
+        <div
+          onClick={() => setActiveTab('amendaguard')}
           style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
         >
           <div style={{
@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-                BIROCRAȚIE<span style={{ color: '#10B981' }}>ZERO</span>
+                REZOLVAT
               </span>
               <span className="badge badge-emerald" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>RO v1.0</span>
             </div>

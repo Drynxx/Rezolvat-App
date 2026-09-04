@@ -4,34 +4,39 @@ export interface OcrExtractionResult {
   data: ProcesVerbalExtractedData;
   confidenceScore: number;
   processingTimeMs: number;
-  source: 'gemini-3.6-flash' | 'gemini-2.0-flash' | 'client-ocr-fallback';
+  source: 'gemini-3.6-flash' | 'gemini-2.0-flash';
 }
 
 /**
  * Strict Extraction Function for Romanian Traffic / Parking Tickets
- * Calls Gemini 3.6 Flash Vision or uses local heuristic extraction.
+ * Calls Gemini 3.6 Flash Vision with zero-mock policy (only document data is returned).
  */
 export async function extractProcesVerbalFromImage(
   base64Image: string,
   mimeType: 'image/webp' | 'image/jpeg' | 'image/png' = 'image/webp'
 ): Promise<OcrExtractionResult> {
   const startTime = performance.now();
-  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || (window as any).__GEMINI_API_KEY__;
+  const apiKey =
+    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
+    (typeof window !== 'undefined' ? (window as any).__GEMINI_API_KEY__ : undefined);
 
-  if (apiKey && apiKey.length > 10) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
+  if (!apiKey || apiKey.length < 10) {
+    throw new Error('Cheia Gemini API lipsește sau este invalidă. Configurați VITE_GEMINI_API_KEY în .env.');
+  }
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [
               {
-                role: 'user',
-                parts: [
-                  {
-                    text: `Ești un asistent juridic de elită din România specializat în transcrierea documentelor olografe oficiale (Procese-Verbale de constatare a contravenției).
+                text: `Ești un asistent juridic de elită din România specializat în transcrierea documentelor olografe oficiale (Procese-Verbale de constatare a contravenției).
+REGULĂ STRICTĂ: Extrage EXCLUSIV datele fizic lizibile din imagine. NU inventa, presupune sau adăuga date inexistente în document.
 Extrage toate câmpurile în format JSON valid:
 - pv_series, pv_number, police_unit, agent_name, agent_badge_number
 - contravener_name, contravener_cnp, contravener_address, contravener_driver_license
@@ -40,86 +45,41 @@ Extrage toate câmpurile în format JSON valid:
 - fine_amount_ron (number), half_fine_amount_ron (number), penalty_points (integer), license_suspended_days (integer)
 - is_radar_offense (boolean), radar_serial_number, radar_auto_plate, metrology_bulletin_number, speed_recorded_kmh, speed_limit_kmh
 - contravener_signed (boolean), refused_to_sign (boolean), has_witness (boolean), witness_name, witness_cnp, objections_field_content, agent_signature_present (boolean)`
-                  },
-                  {
-                    inlineData: {
-                      data: base64Image,
-                      mimeType: mimeType
-                    }
-                  }
-                ]
+              },
+              {
+                inlineData: {
+                  data: base64Image,
+                  mimeType: mimeType
+                }
               }
-            ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              temperature: 0.1
-            }
-          })
+            ]
+          }
+        ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.0
         }
-      );
-
-      if (response.ok) {
-        const jsonRes = await response.json();
-        const rawText = jsonRes?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (rawText) {
-          const parsed = JSON.parse(rawText) as ProcesVerbalExtractedData;
-          return {
-            data: parsed,
-            confidenceScore: 94,
-            processingTimeMs: Math.round(performance.now() - startTime),
-            source: 'gemini-3.6-flash'
-          };
-        }
-      }
-    } catch (err) {
-      console.warn('Live Gemini Flash OCR call failed, switching to local intelligent fallback parser:', err);
+      })
     }
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error('Gemini PV OCR Error:', response.status, errorBody);
+    throw new Error(`Eroare la procesarea procesului-verbal cu Gemini Flash (${response.status}).`);
   }
 
-  // Simulated latency for realistic tactile feel
-  await new Promise((r) => setTimeout(r, 650));
+  const jsonRes = await response.json();
+  const rawText = jsonRes?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!rawText) {
+    throw new Error('Nu s-au putut recunoaște date din imaginea procesului-verbal. Asigurați-vă că fotografia este clară.');
+  }
 
-  // Local fallback realistic extractor
-  const fallbackData: ProcesVerbalExtractedData = {
-    pv_series: 'PRX',
-    pv_number: '0842911',
-    police_unit: 'IPJ Cluj — Biroul Rutier',
-    agent_name: 'Agent Principal Popescu Mihai',
-    agent_badge_number: 'CJ-4491',
-    contravener_name: 'Ionescu Radu George',
-    contravener_cnp: '1890614125890',
-    contravener_address: 'Str. Avram Iancu nr. 42, Cluj-Napoca',
-    contravener_driver_license: 'CJ00912448',
-    incident_date: new Date().toISOString().split('T')[0],
-    incident_time: '14:35',
-    incident_city: 'Cluj-Napoca',
-    incident_county: 'Cluj',
-    incident_exact_location: 'Calea Florești, în dreptul imobilului nr. 56',
-    deed_description: 'A condus autovehiculul cu viteza de 78 km/h pe un sector de drum cu limită de 50 km/h.',
-    statute_violated: 'Art. 108 alin. 1 lit. b pct. 2 din O.U.G. nr. 195/2002',
-    statute_sanctioned: 'Art. 100 alin. 2 din O.U.G. nr. 195/2002',
-    fine_amount_ron: 660,
-    half_fine_amount_ron: 330,
-    penalty_points: 3,
-    license_suspended_days: 0,
-    is_radar_offense: true,
-    radar_serial_number: '', // Missing radar serial triggers defense
-    radar_auto_plate: 'MAI 41920',
-    metrology_bulletin_number: '',
-    speed_recorded_kmh: 78,
-    speed_limit_kmh: 50,
-    contravener_signed: false,
-    refused_to_sign: true,
-    has_witness: false,
-    witness_name: '',
-    objections_field_content: '-',
-    agent_signature_present: true
-  };
-
+  const parsed = JSON.parse(rawText) as ProcesVerbalExtractedData;
   return {
-    data: fallbackData,
-    confidenceScore: 89,
+    data: parsed,
+    confidenceScore: 95,
     processingTimeMs: Math.round(performance.now() - startTime),
-    source: 'client-ocr-fallback'
+    source: 'gemini-3.6-flash'
   };
 }

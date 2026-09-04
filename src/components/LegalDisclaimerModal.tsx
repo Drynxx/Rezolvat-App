@@ -12,7 +12,7 @@ export const LegalDisclaimerModal: React.FC<LegalDisclaimerModalProps> = ({ isOp
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
       <div className="depth-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 flex flex-col gap-6 shadow-2xl relative">
-        
+
         {/* Modal Header */}
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
@@ -24,7 +24,7 @@ export const LegalDisclaimerModal: React.FC<LegalDisclaimerModalProps> = ({ isOp
               <p className="text-xs text-[#A0A0A0]">Reglementat conform legislației din România și UE</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="text-[#A0A0A0] hover:text-white p-2 rounded-full hover:bg-white/[0.06] transition-colors cursor-pointer"
           >
@@ -34,14 +34,14 @@ export const LegalDisclaimerModal: React.FC<LegalDisclaimerModalProps> = ({ isOp
 
         {/* Legal Text Sections */}
         <div className="flex flex-col gap-4 text-xs md:text-sm text-[#A0A0A0]">
-          
+
           <div className="p-4 bg-[#F59E0B]/10 rounded-[14px] border border-[#F59E0B]/20">
             <div className="flex gap-2 items-center mb-1.5 text-[#FBBF24] font-bold text-xs uppercase tracking-wide">
               <AlertTriangle className="w-4 h-4" />
               <span>Declinare a Răspunderii (Protecție Legea nr. 51/1995)</span>
             </div>
             <p className="leading-relaxed text-xs text-[#D1D5DB]">
-              <strong>BirocrațieZero</strong> este o platformă tehnologică independentă operată sub codurile CAEN <strong>6201</strong> (Activități de realizare a software-ului) și <strong>6311</strong> (Prelucrarea datelor și administrarea paginilor web). Platforma nu constituie o societate de avocați, nu acordă consultanță juridică personalizată și nu înlocuiește serviciile unui avocat autorizat conform Legii nr. 51/1995.
+              <strong>Rezolvat</strong> este o platformă tehnologică independentă operată sub codurile CAEN <strong>6201</strong> (Activități de realizare a software-ului) și <strong>6311</strong> (Prelucrarea datelor și administrarea paginilor web). Platforma nu constituie o societate de avocați, nu acordă consultanță juridică personalizată și nu înlocuiește serviciile unui avocat autorizat conform Legii nr. 51/1995.
             </p>
           </div>
 
@@ -69,8 +69,8 @@ export const LegalDisclaimerModal: React.FC<LegalDisclaimerModalProps> = ({ isOp
 
         {/* Footer Button */}
         <div className="flex justify-end">
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="w-full sm:w-auto bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold py-3 px-6 rounded-full text-xs royal-glow transition-all cursor-pointer"
           >
             Am Înțeles și Sunt de Acord

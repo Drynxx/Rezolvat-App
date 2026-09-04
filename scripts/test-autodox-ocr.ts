@@ -28,20 +28,14 @@ async function runTests() {
   const clujOffice = matchDitlOffice('Cluj-Napoca', 'Cluj');
   console.log('DITL Cluj mapping:', clujOffice?.name === 'DITL Primăria Cluj-Napoca' ? '✓ PASS' : '✗ FAIL', clujOffice?.cifSiruta);
 
-  // Test 4: Extractor Fallback Simulation
-  const ciRes = await extractAutoDoxFromImage('dummybase64', 'seller_ci');
-  console.log('\nExtractor CI result:');
-  console.log(' - Name:', ciRes.ciData?.fullName);
-  console.log(' - CNP Valid:', ciRes.ciData?.isCnpValid);
-  console.log(' - Tokens estimate:', ciRes.tokensUsedEstimate);
-  console.log(' - Processing time:', ciRes.processingTimeMs, 'ms');
-
-  const talonRes = await extractAutoDoxFromImage('dummybase64', 'vehicle_talon');
-  console.log('\nExtractor Talon result:');
-  console.log(' - Make:', talonRes.vehicleData?.make);
-  console.log(' - VIN:', talonRes.vehicleData?.vin);
-  console.log(' - VIN Valid:', talonRes.vehicleData?.isVinValid);
-  console.log(' - Tokens estimate:', talonRes.tokensUsedEstimate);
+  // Test 4: Extractor Zero-Mock Verification
+  console.log('\nTesting Zero-Mock Policy (dummy base64 must throw, never return fake data)...');
+  try {
+    await extractAutoDoxFromImage('dummybase64', 'seller_ci');
+    console.log('Zero mock check: ✗ FAIL (expected error, but returned data)');
+  } catch (err: any) {
+    console.log('Zero mock check: ✓ PASS (strictly rejected invalid image without generating fake mock data)');
+  }
 
   console.log('\n🎉 All tests completed successfully!');
 }

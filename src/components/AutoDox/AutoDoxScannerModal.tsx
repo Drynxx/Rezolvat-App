@@ -118,7 +118,7 @@ export const AutoDoxScannerModal: React.FC<AutoDoxScannerModalProps> = ({
       }
     } catch (err: any) {
       console.error('Error during AutoDox OCR processing:', err);
-      alert('A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.');
+      alert(err?.message || 'A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.');
     } finally {
       setIsProcessing(false);
       setStatusMessage('Cadrează documentul');
