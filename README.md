@@ -61,7 +61,7 @@ graph LR
 
 ## Modules & Capabilities
 
-### 1. 🚗 AutoDox — Used Car Transfer & Registration Suite
+### 1. AutoDox — Used Car Transfer & Registration Suite
 Selling or purchasing a vehicle in Romania notoriously requires generating identical contracts for multiple state institutions. **AutoDox** automates this entirely:
 
 * **Official Model ITL 054 (Model 2026)**: Generates the exact 2-page standardized contract in **all 5 legally required identical copies**:
