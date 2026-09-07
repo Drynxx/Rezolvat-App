@@ -19,7 +19,7 @@
 
 ## Executive Summary: What is ZIRO?
 
-**ZIRO** (also known as **Rezolvat** / *Birocrație Zero*) is a modern, privacy-focused legal assistant and administrative engine designed to eliminate the anxiety, queue fatigue, and friction of Romanian civil bureaucracy.
+**ZIRO** is a modern, privacy-focused legal assistant and administrative engine designed to eliminate the anxiety, queue fatigue, and friction of Romanian civil bureaucracy.
 
 Every year, millions of Romanian citizens lose countless hours navigating counter queues, dealing with rejected forms due to clerical errors, or accepting unjustified fines simply because drafting a legal challenge (*Plângere Contravențională*) or vehicle transfer packet (*Contract ITL 054*) feels overly complex and expensive.
 
