@@ -18,7 +18,7 @@
 
 ---
 
-## 🌟 Executive Summary: What is ZIRO?
+## Executive Summary: What is ZIRO?
 
 **ZIRO** (also known as **Rezolvat** / *Birocrație Zero*) is a modern, privacy-focused legal assistant and administrative engine designed to eliminate the anxiety, queue fatigue, and friction of Romanian civil bureaucracy.
 
@@ -59,7 +59,7 @@ graph LR
 
 ---
 
-## 🚀 Core Modules & Capabilities
+## Modules & Capabilities
 
 ### 1. 🚗 AutoDox — Used Car Transfer & Registration Suite
 Selling or purchasing a vehicle in Romania notoriously requires generating identical contracts for multiple state institutions. **AutoDox** automates this entirely:
@@ -76,7 +76,7 @@ Selling or purchasing a vehicle in Romania notoriously requires generating ident
 
 ---
 
-### 2. ⚖️ AmendaGuard — Traffic & Parking Fine Contester
+### 2. AmendaGuard — Traffic & Parking Fine Contester
 Traffic tickets (*Proces-Verbal de Constatare a Contravenției*) frequently suffer from procedural or statutory nullities under Romanian law.
 
 * **Legal Nullity Checks (Codified from O.G. nr. 2/2001)**:
@@ -87,21 +87,21 @@ Traffic tickets (*Proces-Verbal de Constatare a Contravenției*) frequently suff
 
 ---
 
-### 3. 🛡️ ANPC Express — Consumer Protection & Commercial Disputes
+### 3. ANPC Express — Consumer Protection & Commercial Disputes
 * Automates official dispute filings against uncooperative vendors, airlines, delivery services, and e-commerce merchants.
 * Grounds petitions directly in **O.U.G. nr. 34/2014** (14-day online return rights) and **O.G. nr. 21/1992** (consumer guarantees).
 * Formats claims with attached digital proof for 1-click submission into the official ANPC digital registry (*reclamatii.anpc.ro*).
 
 ---
 
-### 4. 🏛️ GhișeuNavigator — Citizen Paperwork Guides
+### 4. GhișeuNavigator — Citizen Paperwork Guides
 * Step-by-step interactive flows for renewing expired ID cards (*Cartea de Identitate*).
 * Online criminal record generation (*Cazier Judiciar*) via Hub MAI and Ghișeul.ro.
 * Obtaining municipal tax certificates (*Certificat de Atestare Fiscală*).
 
 ---
 
-## 🔄 How It Works (Citizen Workflow)
+## How It Works (Citizen Workflow)
 
 ```mermaid
 sequenceDiagram
@@ -123,7 +123,7 @@ sequenceDiagram
 
 ---
 
-## 🏗️ Technical Architecture & Engineering Highlights
+## Technical Architecture & Engineering Highlights
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -153,7 +153,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Privacy, Security & Legal Compliance
+## Privacy, Security & Legal Compliance
 
 | Aspect | Guarantee | Details |
 | :--- | :--- | :--- |
@@ -167,7 +167,7 @@ sequenceDiagram
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 * **Frontend Framework**: [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 * **Build System**: [Vite 6](https://vitejs.dev/) with [@tailwindcss/vite](https://tailwindcss.com/)
@@ -180,7 +180,7 @@ sequenceDiagram
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 * Node.js (version 18.x or higher recommended)
@@ -219,7 +219,7 @@ sequenceDiagram
 
 ---
 
-## 🗺️ Product Roadmap
+## Product Roadmap
 
 - [x] **AutoDox**: 5-Copy Model ITL 054 Auto Sales Contract with live editor & PDF generation
 - [x] **Light/Dark Adaptive Interface**: High-contrast, mobile-first design with bottom dock navigation
@@ -230,7 +230,7 @@ sequenceDiagram
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, feedback, and suggestions are warmly welcomed!
 1. Fork the Project
