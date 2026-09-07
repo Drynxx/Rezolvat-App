@@ -3,6 +3,7 @@ import { X, Download, FileText, Building, Sparkles, User, MapPin } from 'lucide-
 import confetti from 'canvas-confetti';
 import { FiscalFormData } from '../../../types/ghiseu';
 import { generateCerereFiscalPdf } from '../../../lib/pdf/cerere-fiscal-generator';
+import { toast } from 'sonner';
 import { useTheme } from '../../../context/ThemeContext';
 
 interface FiscalFormModalProps {
@@ -59,10 +60,11 @@ export const FiscalFormModal: React.FC<FiscalFormModalProps> = ({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      toast.success('Cererea pentru certificat fiscal a fost descărcată cu succes!');
       confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     } catch (err) {
       console.error('Eroare generare PDF certificat fiscal:', err);
-      alert('A apărut o problemă la generarea cererii PDF.');
+      toast.error('A apărut o problemă la generarea cererii PDF.');
     } finally {
       setIsGenerating(false);
     }

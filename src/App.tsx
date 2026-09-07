@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Toaster } from 'sonner';
 import { TopBar } from './components/TopBar';
 import { FloatingBottomDock } from './components/FloatingBottomDock';
 import { CameraViewfinderModal } from './components/CameraViewfinderModal';
@@ -38,11 +39,30 @@ function MainAppContent() {
   return (
     <div className="w-full min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans relative overflow-x-hidden flex flex-col selection:bg-[#0058FF] selection:text-white transition-colors duration-250">
       
-      {/* Ambient Lighting & Atmospheric Depth Backlight (Dark Mode only) */}
-      {isDark && (
+      {/* Sonner Toaster for System-Wide Notifications */}
+      <Toaster 
+        position="top-center" 
+        richColors 
+        closeButton
+        theme={isDark ? 'dark' : 'light'}
+        toastOptions={{
+          style: {
+            fontFamily: 'var(--font-sans)',
+            borderRadius: '16px',
+            fontSize: '13px',
+          },
+        }}
+      />
+
+      {/* Ambient Lighting & Atmospheric Depth Backlight */}
+      {isDark ? (
         <>
-          <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-[#0058FF]/12 via-[#38BDF8]/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-          <div className="fixed bottom-0 right-0 w-[500px] h-[300px] bg-[#0058FF]/8 blur-3xl pointer-events-none -z-10" />
+          <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[380px] bg-gradient-to-b from-[#0058FF]/15 via-[#38BDF8]/6 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+          <div className="fixed bottom-0 right-0 w-[600px] h-[350px] bg-[#0058FF]/10 blur-3xl pointer-events-none -z-10" />
+        </>
+      ) : (
+        <>
+          <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[300px] bg-gradient-to-b from-[#0058FF]/5 via-[#38BDF8]/2 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
         </>
       )}
 
@@ -55,15 +75,15 @@ function MainAppContent() {
         unreadCount={1}
       />
 
-      {/* 2. Main Content Container (Mobile max-w-md / Desktop max-w-6xl) */}
+      {/* 2. Main Content Container */}
       <main className="w-full flex-1 max-w-md md:max-w-6xl mx-auto px-4 md:px-8 pt-4 pb-32 md:pb-16">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             className="w-full"
           >
             {activeTab === 'autodox' && (

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { Camera, X, Sparkles, Upload, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, Car, User, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { preprocessDocumentImage, ProcessedImageResult } from '../../lib/ocr/compression';
@@ -106,6 +107,7 @@ export const AutoDoxScannerModal: React.FC<AutoDoxScannerModalProps> = ({
 
       setScanResult(result);
       stopCamera();
+      toast.success('Document scanat și extras cu succes!');
 
       try {
         confetti({
@@ -118,7 +120,7 @@ export const AutoDoxScannerModal: React.FC<AutoDoxScannerModalProps> = ({
       }
     } catch (err: any) {
       console.error('Error during AutoDox OCR processing:', err);
-      alert(err?.message || 'A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.');
+      toast.error(err?.message || 'A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.');
     } finally {
       setIsProcessing(false);
       setStatusMessage('Cadrează documentul');

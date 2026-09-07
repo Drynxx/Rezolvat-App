@@ -24,7 +24,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       {/* Central Primary Scan Button */}
       <button
         onClick={onScanClick}
-        className={`w-full bg-[#0058FF] hover:bg-[#0047D4] text-white text-base font-bold rounded-full h-14 flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] cursor-pointer shadow-sm ${
+        className={`w-full bg-[#0058FF] hover:bg-[#0047D4] text-white text-base font-bold rounded-full h-14 flex items-center justify-center gap-2.5 cursor-pointer shadow-sm btn-press ${
           isDark ? 'btn-primary-action' : ''
         }`}
       >
@@ -34,7 +34,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
       {/* Secondary Buttons */}
       <div className="flex gap-4">
-        <label className={`flex-1 text-sm font-semibold rounded-full h-12 flex items-center justify-center gap-2 transition-all cursor-pointer ${
+        <label className={`flex-1 text-sm font-semibold rounded-full h-12 flex items-center justify-center gap-2 cursor-pointer btn-press ${
           isDark
             ? 'bg-[#1C1F2B] hover:bg-[#242838] border border-white/[0.1] hover:border-[#38BDF8]/40 text-[#D1D5DB] shadow-inner'
             : 'bg-white hover:bg-gray-50 border border-[#E5E7EB] text-[#111827] shadow-sm'
@@ -56,7 +56,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         <button
           onClick={onDownloadPdf}
           disabled={isGeneratingPdf}
-          className={`flex-1 text-sm font-semibold rounded-full h-12 flex items-center justify-center gap-2 transition-all cursor-pointer ${
+          className={`flex-1 text-sm font-semibold rounded-full h-12 flex items-center justify-center gap-2 cursor-pointer btn-press ${
             isDark
               ? 'bg-[#1C1F2B] hover:bg-[#242838] border border-white/[0.1] hover:border-[#38BDF8]/40 text-[#D1D5DB] shadow-inner'
               : 'bg-[#0058FF]/10 hover:bg-[#0058FF]/15 text-[#0058FF]'

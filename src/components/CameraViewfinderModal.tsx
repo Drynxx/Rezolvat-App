@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { Camera, X, Sparkles, Upload, RefreshCw, AlertCircle, FlipHorizontal } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { preprocessDocumentImage, ProcessedImageResult } from '../lib/ocr/compression';
@@ -89,7 +90,7 @@ export const CameraViewfinderModal: React.FC<CameraViewfinderModalProps> = ({
       onScanComplete(ocrResult.data, compressed);
     } catch (err: any) {
       console.error('Error during OCR processing:', err);
-      alert(err?.message || 'A apărut o eroare la procesarea documentului. Încercați din nou.');
+      toast.error(err?.message || 'A apărut o eroare la procesarea documentului. Încercați din nou.');
     } finally {
       setIsProcessing(false);
       setStatusMessage('Cadrează Procesul-Verbal');

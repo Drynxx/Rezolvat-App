@@ -1,57 +1,50 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { AutoDoxEditorModal } from './AutoDoxEditorModal';
 import { useTheme } from '../../context/ThemeContext';
+import { Sparkles, FileText, CheckCircle2, ChevronRight, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 interface AutoDoxModuleProps {
   openEditorTrigger?: number;
 }
 
-// ─── Minimal macOS-style icon primitives ────────────────────────────────────
-const IconScan = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <rect x="1" y="1" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.4" />
-    <rect x="11" y="1" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.4" />
-    <rect x="1" y="11" width="4" height="4" rx="1" stroke="currentColor" strokeWidth="1.4" />
-    <path d="M11 11h4v4h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M7 1v14M1 7h14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" strokeLinecap="round" />
-  </svg>
-);
-
-const IconEdit = () => (
-  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-    <path d="M10.586 1.586a2 2 0 112.828 2.828L5 12.828H2V9.828L10.586 1.586Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const IconCheck = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-    <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const IconChevron = () => (
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-    <path d="M5 3l3 3-3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 // ─── Data ────────────────────────────────────────────────────────────────────
 const STEPS = [
-  { num: '01', title: 'Viză DITL Vânzător', sub: 'Cartuș A & B — Scoatere evidență fiscală' },
-  { num: '02', title: 'Viză DITL Cumpărător', sub: 'Cartuș C & D — Înregistrare 30 zile' },
-  { num: '03', title: 'Taxă Talon', sub: '49 RON — Ghișeul.ro / DGPCI' },
-  { num: '04', title: 'Ghișeu DGPCI', sub: 'Depunere dosar plăcuțe & talon (90 zile)' },
+  { num: '01', title: 'Viză DITL Vânzător', sub: 'Cartuș A & B — Scoatere din evidența fiscală locală' },
+  { num: '02', title: 'Viză DITL Cumpărător', sub: 'Cartuș C & D — Înregistrare impunere (termen 30 zile)' },
+  { num: '03', title: 'Taxă Talon (49 RON)', sub: 'Achitare online pe Ghișeul.ro sau Trezorerie / DGPCI' },
+  { num: '04', title: 'Ghișeu DGPCI Înmatriculări', sub: 'Depunere dosar plăcuțe & eliberare talon nou (90 zile)' },
 ];
 
 const EXEMPLARE = [
-  { label: 'Exemplar 1 — Original', dest: 'Cumpărător' },
-  { label: 'Exemplar 2', dest: 'DITL Vânzător' },
-  { label: 'Exemplar 3', dest: 'DITL Cumpărător' },
-  { label: 'Exemplar 4', dest: 'DGPCI Înmatriculări' },
-  { label: 'Exemplar 5', dest: 'Vânzător' },
+  { label: 'Exemplar 1 — Original', dest: 'Cumpărător (rămâne la dosar vehicul)' },
+  { label: 'Exemplar 2', dest: 'DITL Vânzător (scădere rol fiscal)' },
+  { label: 'Exemplar 3', dest: 'DITL Cumpărător (impunere rol fiscal)' },
+  { label: 'Exemplar 4', dest: 'DGPCI Înmatriculări (dosar talon nou)' },
+  { label: 'Exemplar 5', dest: 'Vânzător (arhivă proprie sigură)' },
 ];
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Stagger animation container
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.02,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.28, ease: [0.23, 1, 0.32, 1] as const },
+  },
+};
+
 export const AutoDoxModule: React.FC<AutoDoxModuleProps> = ({ openEditorTrigger }) => {
   const { isDark } = useTheme();
   const [isEditorOpen, setIsEditorOpen] = useState<boolean>(false);
@@ -62,304 +55,230 @@ export const AutoDoxModule: React.FC<AutoDoxModuleProps> = ({ openEditorTrigger 
     }
   }, [openEditorTrigger]);
 
-  // ── Palette tokens (macOS HIG / Fintech minimal) ──
-  const surface = isDark
-    ? 'rgba(255,255,255,0.03)'
-    : 'rgba(0,0,0,0.02)';
-  const surfaceElevated = isDark
-    ? 'rgba(255,255,255,0.05)'
-    : '#FFFFFF';
-  const border = isDark
-    ? 'rgba(255,255,255,0.07)'
-    : 'rgba(0,0,0,0.07)';
-  const borderStrong = isDark
-    ? 'rgba(255,255,255,0.12)'
-    : 'rgba(0,0,0,0.13)';
-  const textPrimary = isDark ? '#F5F5F7' : '#1D1D1F';
-  const textSecondary = isDark ? '#98989D' : '#6E6E73';
-  const textTertiary = isDark ? '#636366' : '#AEAEB2';
-  const accent = '#0058FF';
-  const accentGlow = isDark ? '0 0 20px rgba(0,88,255,0.35)' : '0 4px 14px rgba(0,88,255,0.22)';
-  const emerald = isDark ? '#30D158' : '#28A745';
-  const shadow = isDark
-    ? '0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 40px rgba(0,0,0,0.4)'
-    : '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)';
-
   return (
-    <div className="w-full flex flex-col" style={{ gap: '12px', maxWidth: '860px', margin: '0 auto', paddingBottom: '8px' }}>
+    <motion.div 
+      className="w-full flex flex-col gap-4 max-w-4xl mx-auto pb-4"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
 
-      {/* ── ROW 1: Hero card + Steps ──────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '12px' }}>
+      {/* ── ROW 1: Hero Card + Procedural Steps ──────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* ── Hero Pricing Card ──────────────────────────────────────── */}
-        <div style={{
-          background: isDark
-            ? 'linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%)'
-            : 'linear-gradient(145deg, #FFFFFF 0%, #F5F5F7 100%)',
-          border: `1px solid ${borderStrong}`,
-          borderRadius: '20px',
-          padding: '22px 20px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0',
-          boxShadow: shadow,
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Ambient glow top-right */}
-          {isDark && (
-            <div style={{
-              position: 'absolute', top: '-24px', right: '-24px',
-              width: '120px', height: '120px',
-              background: 'radial-gradient(circle, rgba(0,88,255,0.18) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
+        {/* ── Hero Pricing & AI Card ─────────────────────────────────── */}
+        <motion.div 
+          variants={itemVariants}
+          className="apple-glass-card p-6 flex flex-col justify-between relative overflow-hidden group"
+        >
+          {/* Subtle Ambient Radial Backlight */}
+          {isDark ? (
+            <div className="absolute -top-16 -right-16 w-44 h-44 bg-[#0058FF]/20 rounded-full blur-3xl pointer-events-none" />
+          ) : (
+            <div className="absolute -top-16 -right-16 w-44 h-44 bg-[#0058FF]/8 rounded-full blur-3xl pointer-events-none" />
           )}
 
-          {/* Label row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <span style={{
-              fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em',
-              textTransform: 'uppercase', color: textSecondary,
-            }}>Contract Auto</span>
-            <span style={{
-              fontSize: '10px', fontWeight: 600, color: emerald,
-              background: isDark ? 'rgba(48,209,88,0.1)' : 'rgba(40,167,69,0.08)',
-              border: `1px solid ${isDark ? 'rgba(48,209,88,0.2)' : 'rgba(40,167,69,0.2)'}`,
-              borderRadius: '6px', padding: '2px 8px',
-            }}>ITL 054 · 2026</span>
-          </div>
+          <div>
+            {/* Top Badge & Code */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold tracking-wider uppercase text-[var(--text-muted)]">
+                  Contract Auto
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#0058FF]" />
+              </div>
+              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${
+                isDark 
+                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              }`}>
+                <ShieldCheck className="w-3 h-3" />
+                <span>Model ITL 054 · 2026</span>
+              </span>
+            </div>
 
-          {/* Price hero */}
-          <div style={{ marginBottom: '6px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-              <span className="text-[44px] md:text-[52px]" style={{
-                fontWeight: 800, lineHeight: 1,
-                letterSpacing: '-0.04em', color: textPrimary,
-                fontVariantNumeric: 'tabular-nums',
-              }}>39</span>
-              <span style={{ fontSize: '18px', fontWeight: 600, color: accent, letterSpacing: '-0.01em', marginBottom: '4px' }}>RON</span>
+            {/* Price Display */}
+            <div className="mb-2">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-5xl md:text-6xl font-black font-tabular tracking-display text-[var(--text-main)]">
+                  39
+                </span>
+                <span className="text-xl font-bold text-[#0058FF] tracking-tight">
+                  RON
+                </span>
+              </div>
+            </div>
+            
+            <p className="text-xs text-[var(--text-muted)] font-medium mb-6 leading-relaxed">
+              Dosar complet 5 exemplare · Sincronizare DITL & DGPCI
+            </p>
+
+            {/* Feature List */}
+            <div className="flex flex-col gap-2.5 mb-7">
+              {[
+                '5 exemplare identice numerotate oficial',
+                'Cartușe fiscale conforme O.M.D.R.A.P. 2026',
+                'Scanare optică AI Talon Auto & Buletine (CI)',
+                '100% confidențial — procesare securizată în browser',
+              ].map((feature) => (
+                <div key={feature} className="flex items-center gap-2.5 text-xs text-[var(--text-main)]">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                    isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-600'
+                  }`}>
+                    <CheckCircle2 className="w-3 h-3" />
+                  </div>
+                  <span className="font-medium">{feature}</span>
+                </div>
+              ))}
             </div>
           </div>
-          <p style={{ fontSize: '12px', color: textSecondary, marginBottom: '22px', lineHeight: 1.4 }}>
-            Dosar complet · 5 exemplare oficiale
-          </p>
 
-          {/* Feature list — sparse, macOS-style */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '26px' }}>
-            {[
-              '5 exemplare identice Model 2026',
-              '100% acceptat DITL & DGPCI',
-              'Scanare AI Gemini Flash',
-              'Offline — date locale în browser',
-            ].map((f) => (
-              <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '18px', height: '18px', borderRadius: '50%',
-                  background: isDark ? 'rgba(48,209,88,0.12)' : 'rgba(40,167,69,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: emerald, flexShrink: 0,
-                }}>
-                  <IconCheck />
-                </div>
-                <span style={{ fontSize: '13px', color: textPrimary, fontWeight: 450 }}>{f}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Separator */}
-          <div style={{ height: '1px', background: border, marginBottom: '20px' }} />
-
-          {/* Action buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Action CTAs */}
+          <div className="flex flex-col gap-2.5 pt-4 border-t border-[var(--glass-border)]">
             <button
               onClick={() => setIsEditorOpen(true)}
-              style={{
-                width: '100%',
-                background: accent,
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '13px 20px',
-                fontSize: '14px',
-                fontWeight: 650,
-                letterSpacing: '-0.01em',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: accentGlow,
-                transition: 'opacity 0.15s, transform 0.1s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-              onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.985)')}
-              onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+              className="w-full py-3.5 px-5 rounded-xl bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold text-sm tracking-tight flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,88,255,0.35)] cursor-pointer btn-press"
             >
-              <IconScan />
-              <span>Scanează cu AI</span>
+              <Sparkles className="w-4 h-4 fill-white/20" />
+              <span>Scanează Documente cu AI</span>
             </button>
 
             <button
               onClick={() => setIsEditorOpen(true)}
-              style={{
-                width: '100%',
-                background: surfaceElevated,
-                color: textPrimary,
-                border: `1px solid ${border}`,
-                borderRadius: '12px',
-                padding: '11px 20px',
-                fontSize: '13px',
-                fontWeight: 550,
-                letterSpacing: '-0.01em',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold tracking-tight flex items-center justify-center gap-2 border transition-colors cursor-pointer btn-press ${
+                isDark 
+                  ? 'bg-white/[0.04] hover:bg-white/[0.08] text-[var(--text-main)] border-white/[0.08]' 
+                  : 'bg-black/[0.03] hover:bg-black/[0.06] text-[var(--text-main)] border-black/[0.06]'
+              }`}
             >
-              <IconEdit />
-              <span>Formular manual</span>
+              <FileText className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+              <span>Completează manual formularul</span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* ── 4-Step Timeline ───────────────────────────────────────── */}
-        <div style={{
-          background: surface,
-          border: `1px solid ${border}`,
-          borderRadius: '20px',
-          padding: '24px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0',
-          boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.25)' : '0 4px 16px rgba(0,0,0,0.03)',
-        }}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 650, color: textPrimary, letterSpacing: '-0.01em' }}>
-              Procedură pas cu pas
-            </span>
-            <span style={{ fontSize: '11px', color: textTertiary, fontWeight: 500 }}>4 pași</span>
-          </div>
+        {/* ── 4-Step Timeline ────────────────────────────────────────── */}
+        <motion.div 
+          variants={itemVariants}
+          className="apple-glass-card p-6 flex flex-col justify-between"
+        >
+          <div>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-sm font-bold tracking-tight-title text-[var(--text-main)]">
+                Procedură Legală Pas cu Pas
+              </h3>
+              <span className="text-[11px] font-semibold text-[var(--text-muted)] bg-[var(--panel-bg-nested)] px-2.5 py-0.5 rounded-full border border-[var(--panel-border-nested)]">
+                4 Etape
+              </span>
+            </div>
 
-          {/* Steps with connector lines */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {STEPS.map((step, idx) => (
-              <div key={step.num}>
-                <div style={{
-                  display: 'flex', alignItems: 'flex-start', gap: '14px',
-                  padding: '10px 0',
-                }}>
-                  {/* Step indicator */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-                    <div style={{
-                      width: '28px', height: '28px', borderRadius: '50%',
-                      background: isDark ? 'rgba(0,88,255,0.15)' : 'rgba(0,88,255,0.08)',
-                      border: `1px solid rgba(0,88,255,0.25)`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '10px', fontWeight: 700, color: accent,
-                      fontVariantNumeric: 'tabular-nums', letterSpacing: '0.02em',
-                    }}>
+            {/* Vertical Flow Steps */}
+            <div className="flex flex-col">
+              {STEPS.map((step, idx) => (
+                <div key={step.num} className="flex items-start gap-3.5 relative pb-4 last:pb-0">
+                  {/* Step Milestone Dot + Connector */}
+                  <div className="flex flex-col items-center shrink-0">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black font-tabular border ${
+                      idx === 0
+                        ? 'bg-[#0058FF] text-white border-[#0058FF] shadow-[0_0_10px_rgba(0,88,255,0.4)]'
+                        : isDark
+                          ? 'bg-white/[0.06] text-[#38BDF8] border-white/[0.1]'
+                          : 'bg-[#0058FF]/10 text-[#0058FF] border-[#0058FF]/15'
+                    }`}>
                       {step.num}
                     </div>
                     {idx < STEPS.length - 1 && (
-                      <div style={{
-                        width: '1px', height: '20px',
-                        background: `linear-gradient(to bottom, rgba(0,88,255,0.2), transparent)`,
-                        marginTop: '2px',
-                      }} />
+                      <div className="w-[2px] h-9 bg-gradient-to-b from-[#0058FF]/30 to-transparent my-1" />
                     )}
                   </div>
-                  {/* Step content */}
-                  <div style={{ paddingTop: '4px', flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: textPrimary, lineHeight: 1.3, letterSpacing: '-0.01em' }}>
+
+                  {/* Step Text Info */}
+                  <div className="pt-0.5 flex-1 min-w-0">
+                    <h4 className="text-xs font-bold text-[var(--text-main)] tracking-tight">
                       {step.title}
-                    </div>
-                    <div style={{ fontSize: '11px', color: textTertiary, marginTop: '2px', lineHeight: 1.4 }}>
+                    </h4>
+                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5 leading-snug">
                       {step.sub}
-                    </div>
+                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+
+          {/* Bottom Helpful Note */}
+          <div className={`mt-5 p-3 rounded-xl text-[11px] flex items-center gap-2 border ${
+            isDark ? 'bg-blue-950/25 text-blue-300 border-blue-800/30' : 'bg-blue-50 text-blue-900 border-blue-200/60'
+          }`}>
+            <span className="font-bold">Info:</span>
+            <span>Nu mai este necesară legalizarea notarială a contractului de vânzare auto.</span>
+          </div>
+        </motion.div>
+
       </div>
 
-      {/* ── ROW 2: Exemplare list ─────────────────────────────────────── */}
-      <div style={{
-        background: surface,
-        border: `1px solid ${border}`,
-        borderRadius: '20px',
-        overflow: 'hidden',
-        boxShadow: isDark ? '0 20px 40px rgba(0,0,0,0.2)' : '0 4px 16px rgba(0,0,0,0.03)',
-      }}>
-        {/* Card header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 20px',
-          borderBottom: `1px solid ${border}`,
-        }}>
-          <span style={{ fontSize: '13px', fontWeight: 650, color: textPrimary, letterSpacing: '-0.01em' }}>
-            Cele 5 exemplare
+      {/* ── ROW 2: The 5 Official Exemplare (Apple Table List) ──────── */}
+      <motion.div 
+        variants={itemVariants}
+        className="apple-glass-card overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--glass-border)]">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-bold tracking-tight-title text-[var(--text-main)]">
+              Destinația celor 5 Exemplare Oficiale
+            </h3>
+            <span className="text-[10px] text-[var(--text-muted)] font-medium">
+              (generate automat într-un singur PDF)
+            </span>
+          </div>
+          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+            isDark 
+              ? 'bg-blue-500/15 text-[#38BDF8] border-blue-500/30' 
+              : 'bg-[#0058FF]/10 text-[#0058FF] border-[#0058FF]/20'
+          }`}>
+            Set complet ITL 054
           </span>
-          <span style={{
-            fontSize: '10px', fontWeight: 600, color: emerald,
-            background: isDark ? 'rgba(48,209,88,0.1)' : 'rgba(40,167,69,0.08)',
-            border: `1px solid ${isDark ? 'rgba(48,209,88,0.2)' : 'rgba(40,167,69,0.2)'}`,
-            borderRadius: '6px', padding: '2px 8px',
-          }}>Model ITL 054</span>
         </div>
 
-        {/* Table-like exemplare rows */}
-        {EXEMPLARE.map((ex, idx) => (
-          <div
-            key={ex.label}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '11px 16px',
-              borderBottom: idx < EXEMPLARE.length - 1 ? `1px solid ${border}` : 'none',
-              transition: 'background 0.12s',
-              cursor: 'default',
-              gap: '8px',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-              <div style={{
-                width: '20px', height: '20px', borderRadius: '6px',
-                background: isDark ? 'rgba(48,209,88,0.12)' : 'rgba(40,167,69,0.08)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: emerald, flexShrink: 0,
-              }}>
-                <IconCheck />
+        {/* List Rows */}
+        <div className="divide-y divide-[var(--glass-border)]">
+          {EXEMPLARE.map((ex, idx) => (
+            <div
+              key={ex.label}
+              className="flex items-center justify-between px-5 py-3 transition-colors duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold font-tabular shrink-0 ${
+                  idx === 0 
+                    ? 'bg-[#0058FF] text-white shadow-sm' 
+                    : isDark ? 'bg-white/[0.08] text-[var(--text-muted)]' : 'bg-black/[0.05] text-[var(--text-muted)]'
+                }`}>
+                  {idx + 1}
+                </div>
+                <span className="text-xs font-semibold text-[var(--text-main)] tracking-tight">
+                  {ex.label}
+                </span>
               </div>
-              <span style={{ fontSize: '13px', color: textPrimary, fontWeight: 500, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {ex.label}
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-              <span style={{ fontSize: '11px', color: textTertiary, fontWeight: 450, whiteSpace: 'nowrap' }}>{ex.dest}</span>
-              <span style={{ color: textTertiary, opacity: 0.5, display: 'flex' }}>
-                <IconChevron />
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {/* ── AutoDox Editor Modal ──────────────────────────────────────── */}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[11px] font-medium text-[var(--text-muted)]">
+                  {ex.dest}
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-[var(--text-subtle)]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── AutoDox Editor Modal ────────────────────────────────────── */}
       <AutoDoxEditorModal
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
       />
-    </div>
+
+    </motion.div>
   );
 };

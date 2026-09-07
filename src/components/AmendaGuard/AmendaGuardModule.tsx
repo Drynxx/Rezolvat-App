@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, FileText, Download, RefreshCw, Copy, Check, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 import { LegalAnalysisResult, SampleTicket, ProcesVerbalExtractedData } from '../../types';
 import { RomanianContraventionRuleEngine } from '../../lib/legal-engine/contravention-rules';
 import { SAMPLE_TICKETS } from '../../lib/data/sample-tickets';
@@ -64,9 +65,10 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
       setReviewData(ocrResult.data);
       setCompressionStats(compressed);
       setIsReviewModalOpen(true);
+      toast.success('Proces-verbal scanat și analizat cu succes!');
     } catch (err) {
       console.error('Upload OCR error:', err);
-      alert('Eroare la procesarea documentului.');
+      toast.error('Eroare la procesarea documentului.');
     } finally {
       setIsProcessing(false);
     }
@@ -80,6 +82,7 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
   };
 
   const handleDownloadPdf = async () => {
+    const toastId = toast.loading('Se generează Plângerea Contravențională...');
     try {
       setIsGeneratingPdf(true);
       const pdfBytes = await generatePlangerePdf(currentTicketData, analysis);
@@ -94,6 +97,7 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      toast.success('Plângerea PDF a fost descărcată cu succes!', { id: toastId });
       confetti({
         particleCount: 70,
         spread: 60,
@@ -101,7 +105,7 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
       });
     } catch (err) {
       console.error('Error generating PDF:', err);
-      alert('A apărut o eroare la generarea PDF-ului.');
+      toast.error('A apărut o eroare la generarea PDF-ului.', { id: toastId });
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -111,6 +115,7 @@ export const AmendaGuardModule: React.FC<AmendaGuardModuleProps> = ({ onOpenScan
     const iban = analysis.competentCourt.timbruTaxIban || 'RO49TREZ70020A100101XXXX';
     navigator.clipboard.writeText(iban);
     setIsCopiedIban(true);
+    toast.success('Cont IBAN Trezorerie copiat în clipboard!');
     setTimeout(() => setIsCopiedIban(false), 2000);
   };
 

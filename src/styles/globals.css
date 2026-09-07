@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", 'Inter', "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 *, ::before, ::after {
@@ -9,22 +9,31 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Light Theme Variables */
+/* Apple & Emil Kowalski Easing Constants */
 :root {
-  --bg-main: #FFFFFF;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Light Theme Variables (Apple Clean Canvas) */
+  --bg-main: #FBFBFD;
+  --bg-subtle: #F5F5F7;
   --panel-bg: #FFFFFF;
-  --panel-bg-nested: #F9FAFB;
-  --panel-border: #E5E7EB;
-  --panel-border-nested: #F3F4F6;
-  --panel-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+  --panel-bg-nested: #F5F5F7;
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --panel-border-nested: rgba(0, 0, 0, 0.05);
+  --panel-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
   
-  --text-main: #111827;
-  --text-muted: #6B7280;
-  --text-subtle: #9CA3AF;
+  --text-main: #1D1D1F;
+  --text-muted: #6E6E73;
+  --text-subtle: #86868B;
   
   --primary-blue: #0058FF;
   --primary-blue-hover: #0047D4;
   --primary-tint: rgba(0, 88, 255, 0.08);
+  
+  --emerald-accent: #28A745;
+  --emerald-tint: rgba(40, 167, 69, 0.09);
   
   --fine-coral: #E11D48;
   --fine-glow: none;
@@ -34,41 +43,57 @@
   --ring-glow: none;
   
   --btn-scan-shadow: 0 4px 14px rgba(0, 88, 255, 0.25);
-  --btn-scan-border: transparent;
+  --btn-scan-border: rgba(0, 88, 255, 0.2);
   
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-border: #E5E7EB;
+  --nav-bg: rgba(255, 255, 255, 0.82);
+  --nav-border: rgba(0, 0, 0, 0.08);
+
+  /* Translucent Glass Material */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.06), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
 }
 
-/* Dark-Depth Luxury Theme Variables */
+/* Dark-Depth Luxury Theme Variables (Apple Pro Slate) */
 :root.dark {
   --bg-main: #0A0E17;
-  --panel-bg: #1C1F2B;
-  --panel-bg-nested: #131620;
-  --panel-border: rgba(255, 255, 255, 0.08);
+  --bg-subtle: #121622;
+  --panel-bg: #161A26;
+  --panel-bg-nested: #11141F;
+  --panel-border: rgba(255, 255, 255, 0.09);
   --panel-border-nested: rgba(255, 255, 255, 0.05);
-  --panel-shadow: 0px 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  --panel-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
   
-  --text-main: #FFFFFF;
-  --text-muted: #A0A0A0;
-  --text-subtle: #6B7280;
+  --text-main: #F5F5F7;
+  --text-muted: #98989D;
+  --text-subtle: #636366;
   
   --primary-blue: #0058FF;
-  --primary-blue-hover: #0047D4;
+  --primary-blue-hover: #1A6CFF;
   --primary-tint: rgba(0, 88, 255, 0.2);
   
+  --emerald-accent: #30D158;
+  --emerald-tint: rgba(48, 209, 88, 0.12);
+  
   --fine-coral: #FFB7B2;
-  --fine-glow: 0 0 14px rgba(255, 183, 178, 0.45);
+  --fine-glow: 0 0 16px rgba(255, 183, 178, 0.4);
   
   --ring-track: #1C1F2B;
   --ring-stroke: url(#illuminatedRingGrad);
-  --ring-glow: drop-shadow(0 0 12px rgba(56, 189, 248, 0.45));
+  --ring-glow: drop-shadow(0 0 14px rgba(56, 189, 248, 0.45));
   
-  --btn-scan-shadow: 0 0 25px -4px rgba(0, 88, 255, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
-  --btn-scan-border: rgba(56, 189, 248, 0.4);
+  --btn-scan-shadow: 0 0 24px -2px rgba(0, 88, 255, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+  --btn-scan-border: rgba(56, 189, 248, 0.45);
   
-  --nav-bg: rgba(10, 14, 23, 0.95);
-  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-bg: rgba(10, 14, 23, 0.82);
+  --nav-border: rgba(255, 255, 255, 0.09);
+
+  /* Translucent Glass Material */
+  --glass-bg: rgba(22, 26, 38, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
 }
 
 body {
@@ -79,16 +104,58 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 240ms var(--ease-out), color 240ms var(--ease-out);
+}
+
+/* Optical Typography & Numeric Utilities */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.tracking-display {
+  letter-spacing: -0.028em;
+}
+
+.tracking-tight-title {
+  letter-spacing: -0.018em;
+}
+
+/* Translucent Apple Glass Surface */
+.apple-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.apple-glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 22px;
+  transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+/* Direct Responsive Feedback (.btn-press) */
+.btn-press {
+  transition: transform 120ms var(--ease-out), opacity 120ms var(--ease-out);
+  will-change: transform;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
 }
 
 /* Adaptive Panel Classes */
 .app-panel {
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: var(--panel-shadow);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
 }
 
 .app-panel-nested {
@@ -108,6 +175,11 @@ body {
   background-color: var(--primary-blue);
   box-shadow: var(--btn-scan-shadow);
   border: 1px solid var(--btn-scan-border);
+  transition: transform 120ms var(--ease-out), background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.btn-primary-action:active {
+  transform: scale(0.98);
 }
 
 /* Hide scrollbars */
@@ -117,4 +189,27 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Hover gating for fine pointers only */
+@media (hover: hover) and (pointer: fine) {
+  .hover-elevate {
+    transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+  }
+  .hover-elevate:hover {
+    transform: translateY(-1.5px);
+  }
+}
+
+/* Reduced Motion: Gentle opacity crossfades without vestibular displacement */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .btn-press:active {
+    transform: none !important;
+  }
 }

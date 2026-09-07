@@ -3,6 +3,7 @@ import { X, Download, FileText, CheckCircle2, User, MapPin, Sparkles } from 'luc
 import confetti from 'canvas-confetti';
 import { BuletinFormData, BuletinDecisionState } from '../../../types/ghiseu';
 import { generateCerereBuletinPdf } from '../../../lib/pdf/cerere-buletin-generator';
+import { toast } from 'sonner';
 import { useTheme } from '../../../context/ThemeContext';
 
 interface BuletinFormModalProps {
@@ -72,10 +73,11 @@ export const BuletinFormModal: React.FC<BuletinFormModalProps> = ({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
+      toast.success('Cererea pentru eliberare act de identitate a fost descărcată!');
       confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     } catch (err) {
       console.error('Eroare generare PDF buletin:', err);
-      alert('A apărut o problemă la generarea formularului PDF. Vă rugăm reîncercați.');
+      toast.error('A apărut o problemă la generarea formularului PDF. Vă rugăm reîncercați.');
     } finally {
       setIsGenerating(false);
     }

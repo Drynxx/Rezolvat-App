@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Wrench, Plane, Tag, FileText, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 import { useTheme } from '../../context/ThemeContext';
 
 export const AnpcModule: React.FC = () => {
@@ -78,7 +79,7 @@ export const AnpcModule: React.FC = () => {
           <button
             onClick={() => {
               confetti({ particleCount: 50, spread: 50 });
-              alert('Sesizarea oficială ANPC Express a fost generată!');
+              toast.success('Sesizarea oficială ANPC Express a fost generată!');
             }}
             className={`w-full bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold py-4 px-6 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer text-sm active:scale-98 shadow-sm ${
               isDark ? 'btn-primary-action' : ''

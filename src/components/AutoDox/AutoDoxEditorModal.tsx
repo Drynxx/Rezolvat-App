@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   X,
   Car,
@@ -242,7 +243,7 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
             : prev.sellerFiscalOrg,
         }));
         setScannedBadges((prev) => ({ ...prev, seller: true }));
-        setScanToast(`Vânzător extras din CI (${result.processingTimeMs}ms)`);
+        toast.success(`Vânzător extras din CI (${result.processingTimeMs}ms)`);
       } else {
         setFormData((prev) => ({
           ...prev,
@@ -273,7 +274,7 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
             : prev.buyerFiscalOrg,
         }));
         setScannedBadges((prev) => ({ ...prev, buyer: true }));
-        setScanToast(`Cumpărător extras din CI (${result.processingTimeMs}ms)`);
+        toast.success(`Cumpărător extras din CI (${result.processingTimeMs}ms)`);
       }
     }
 
@@ -296,11 +297,12 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
         },
       }));
       setScannedBadges((prev) => ({ ...prev, vehicle: true }));
-      setScanToast(`Talon auto extras (${result.processingTimeMs}ms)`);
+      toast.success(`Talon auto extras (${result.processingTimeMs}ms)`);
     }
   };
 
   const handleDownload = async () => {
+    const toastId = toast.loading('Se generează setul de 5 exemplare oficiale ITL 054...');
     try {
       setIsGenerating(true);
       const pdfBytes = await generateItl054BundlePdf(formData);
@@ -315,11 +317,12 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      toast.success('Dosarul oficial PDF a fost descărcat cu succes!', { id: toastId });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       onClose();
     } catch (err) {
       console.error('Error downloading Model 2026 ITL 054:', err);
-      alert('Eroare la generarea dosarului oficial PDF.');
+      toast.error('Eroare la generarea dosarului oficial PDF.', { id: toastId });
     } finally {
       setIsGenerating(false);
     }
@@ -341,16 +344,17 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
   const handleQuickUpload = async (e: React.ChangeEvent<HTMLInputElement>, docType: AutoDoxDocType) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const toastId = toast.loading('Optimizare imagine și analiză Gemini Flash...');
     try {
       setIsDirectProcessing(true);
-      setScanToast('Optimizare imagine și analiză Gemini Flash...');
       const compressed = await preprocessDocumentImage(file, 1024, 0.75);
       const res = await extractAutoDoxFromImage(compressed.base64, docType, compressed.mimeType);
       handleApplyScanData(res);
+      toast.dismiss(toastId);
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
     } catch (err: any) {
       console.error('Error during quick OCR upload:', err);
-      alert(err?.message || 'A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.');
+      toast.error(err?.message || 'A apărut o eroare la procesarea fotografiei. Vă rugăm reîncercați.', { id: toastId });
     } finally {
       setIsDirectProcessing(false);
       if (e.target) e.target.value = '';
@@ -393,22 +397,22 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
   return (
     <AnimatePresence>
       <div
-        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
-        style={{ background: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(20px)' }}
+        className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
+        style={{ background: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(24px)' }}
       >
         <motion.div
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 60, opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full sm:max-w-2xl max-h-[92vh] flex flex-col overflow-hidden rounded-t-[24px] sm:rounded-[24px] shadow-2xl"
+          initial={{ scale: 0.96, opacity: 0, y: 14 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.96, opacity: 0, y: 14 }}
+          transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
+          className="w-full sm:max-w-2xl max-h-[92vh] flex flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px] shadow-2xl relative"
           style={{
             background: bg,
             border: `1px solid ${border}`,
-            boxShadow: isDark ? '0 24px 70px rgba(0,0,0,0.8)' : '0 16px 40px rgba(0,0,0,0.12)',
+            boxShadow: isDark ? '0 24px 70px rgba(0,0,0,0.8), inset 0 1px 0 0 rgba(255,255,255,0.08)' : '0 16px 40px rgba(0,0,0,0.12), inset 0 1px 0 0 rgba(255,255,255,0.8)',
           }}
         >
-          {/* ── WINDOW HEADER (macOS Style) ─────────────────────────────────── */}
+          {/* ── WINDOW HEADER (Apple macOS Style) ────────────────────────────── */}
           <div
             className="flex items-center justify-between px-5 py-3.5 flex-shrink-0"
             style={{ borderBottom: `1px solid ${borderLight}` }}
@@ -418,7 +422,7 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
                 className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: accentBg, border: `1px solid ${accentBorder}`, color: accent }}
               >
-                <Car className="w-4 h-4" />
+                <Car className="w-4 h-4 stroke-[2]" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -441,7 +445,7 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
             <button
               type="button"
               onClick={onClose}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer hover:bg-black/5 dark:hover:bg-white/10"
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 btn-press"
               style={{ color: textSecondary }}
               title="Închide"
             >
@@ -449,7 +453,7 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
             </button>
           </div>
 
-          {/* ── SEGMENTED STEPPER (macOS Tab Bar) ───────────────────────────── */}
+          {/* ── SEGMENTED STEPPER (Fluid Apple Spring Pill) ──────────────────── */}
           <div className="px-4 py-2 flex-shrink-0" style={{ borderBottom: `1px solid ${borderLight}` }}>
             <div
               className="grid grid-cols-4 gap-1 p-1 rounded-xl"
@@ -462,16 +466,19 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
                     key={step.id}
                     type="button"
                     onClick={() => goToStep(step.id)}
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg transition-all cursor-pointer select-none"
-                    style={{
-                      background: isActive
-                        ? isDark
-                          ? 'rgba(255,255,255,0.1)'
-                          : '#FFFFFF'
-                        : 'transparent',
-                      boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                    }}
+                    className="relative flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg cursor-pointer select-none btn-press z-10"
                   >
+                    {isActive && (
+                      <motion.div
+                        layoutId="wizard-stepper-pill"
+                        className="absolute inset-0 rounded-lg -z-10 shadow-sm"
+                        style={{
+                          background: isDark ? 'rgba(255,255,255,0.12)' : '#FFFFFF',
+                          boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
+                        }}
+                        transition={{ type: 'spring', duration: 0.35, bounce: 0.12 }}
+                      />
+                    )}
                     <div
                       className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
                       style={{
@@ -496,27 +503,6 @@ export const AutoDoxEditorModal: React.FC<AutoDoxEditorModalProps> = ({ isOpen, 
               })}
             </div>
           </div>
-
-          {/* ── INLINE TOAST ───────────────────────────────────────────────── */}
-          {scanToast && (
-            <div
-              className="mx-4 mt-2 px-3 py-2 rounded-xl flex items-center justify-between gap-2 flex-shrink-0 animate-fadeIn"
-              style={{ background: emeraldBg, border: `1px solid ${isDark ? 'rgba(48,209,88,0.25)' : 'rgba(40,167,69,0.2)'}` }}
-            >
-              <div className="flex items-center gap-2 text-xs" style={{ color: textPrimary }}>
-                <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: emerald }} />
-                <span className="font-medium">{scanToast}</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setScanToast(null)}
-                className="opacity-60 hover:opacity-100 cursor-pointer"
-                style={{ color: textPrimary }}
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          )}
 
           {/* ── SCROLLABLE BODY ────────────────────────────────────────────── */}
           <div className="p-4 sm:p-5 overflow-y-auto flex-1 flex flex-col gap-4 text-xs">

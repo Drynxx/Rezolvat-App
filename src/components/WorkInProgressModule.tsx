@@ -6,12 +6,10 @@ import {
   Car,
   ArrowRight,
   Clock,
-  Sparkles,
-  ShieldCheck,
   CheckCircle2,
-  AlertCircle,
   HelpCircle
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { AppTab } from '../types';
 import { useTheme } from '../context/ThemeContext';
 
@@ -50,7 +48,7 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           tagline: 'Auditare automată vicii de formă O.G. 2/2001 & Plângeri contravenționale',
           description:
             'Modulul de analiză procese-verbale rutiere și redactare plângeri la judecătorie este temporar dezactivat pentru calibrare juridică și actualizare conform jurisprudenței 2026.',
-          icon: <Scale className="w-8 h-8 text-amber-400" />,
+          icon: <Scale className="w-8 h-8 text-amber-400 stroke-[1.8]" />,
           plannedFeatures: [
             {
               title: 'Scanare AI Proces-Verbal',
@@ -75,7 +73,7 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           tagline: 'Generare dosare digitale pentru litigii comerciale și drepturile consumatorilor',
           description:
             'Modulul de redactare sesizări și reclamații pentru Protecția Consumatorului este în curs de integrare cu noile formulare electronice județene.',
-          icon: <FileText className="w-8 h-8 text-cyan-400" />,
+          icon: <FileText className="w-8 h-8 text-cyan-400 stroke-[1.8]" />,
           plannedFeatures: [
             {
               title: 'Șabloane Juridice O.G. 21/1992',
@@ -101,7 +99,7 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           tagline: 'Navigare proceduri administrative, calcul taxe locale și programări',
           description:
             'Modulul de asistență birocratică pentru primării, DITL și DGPCI se află în optimizare de fluxuri și actualizare de adrese instituționale.',
-          icon: <Landmark className="w-8 h-8 text-indigo-400" />,
+          icon: <Landmark className="w-8 h-8 text-indigo-400 stroke-[1.8]" />,
           plannedFeatures: [
             {
               title: 'Ghidare DITL & DGPCI Pas cu Pas',
@@ -124,9 +122,14 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
   const moduleInfo = getModuleInfo();
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6 py-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+      className="w-full max-w-4xl mx-auto flex flex-col gap-5 py-4"
+    >
       {/* 1. Hero Notice Card */}
-      <div className="app-panel p-6 md:p-10 relative overflow-hidden text-center flex flex-col items-center">
+      <div className="apple-glass-card p-6 md:p-10 relative overflow-hidden text-center flex flex-col items-center">
         {/* Subtle decorative glow */}
         {isDark && (
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 bg-gradient-to-b from-amber-500/10 via-blue-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -140,28 +143,30 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
 
         {/* Module Icon */}
         <div
-          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg ${isDark
+          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg ${
+            isDark
               ? 'bg-[#161B26] border border-white/[0.08]'
-              : 'bg-white border border-gray-200 shadow-sm'
-            }`}
+              : 'bg-white border border-black/[0.06] shadow-sm'
+          }`}
         >
           {moduleInfo.icon}
         </div>
 
         {/* Title & Tagline */}
-        <h2 className="text-xl md:text-2xl font-black tracking-tight text-[var(--text-main)] mb-2">
+        <h2 className="text-xl md:text-2xl font-black tracking-display text-[var(--text-main)] mb-2">
           {moduleInfo.name}
         </h2>
-        <p className="text-xs md:text-sm font-medium text-[var(--text-muted)] max-w-xl mb-6">
+        <p className="text-xs md:text-sm font-medium text-[var(--text-muted)] max-w-xl mb-6 leading-relaxed">
           {moduleInfo.tagline}
         </p>
 
         {/* Focus Banner */}
         <div
-          className={`w-full max-w-2xl p-4 md:p-5 rounded-2xl border text-left mb-8 transition-colors ${isDark
+          className={`w-full max-w-2xl p-4 md:p-5 rounded-2xl border text-left mb-8 transition-colors ${
+            isDark
               ? 'bg-[#0E131F]/80 border-[#0058FF]/30 shadow-[0_0_25px_rgba(0,88,255,0.08)]'
               : 'bg-blue-50/70 border-blue-200'
-            }`}
+          }`}
         >
           <div className="flex items-start gap-3">
             <div>
@@ -182,9 +187,9 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center max-w-md">
           <button
             onClick={onGoToAutoDox}
-            className="w-full bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-2.5 transition-all cursor-pointer text-sm shadow-md active:scale-98"
+            className="w-full bg-[#0058FF] hover:bg-[#0047D4] text-white font-bold py-3.5 px-6 rounded-full flex items-center justify-center gap-2.5 transition-all cursor-pointer text-sm shadow-[0_4px_14px_rgba(0,88,255,0.3)] btn-press"
           >
-            <Car className="w-4 h-4" />
+            <Car className="w-4 h-4 stroke-[2]" />
             <span>Mergi la AutoDox (Contracte Auto 5x)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -192,10 +197,11 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           {onOpenDisclaimer && (
             <button
               onClick={onOpenDisclaimer}
-              className={`w-full sm:w-auto py-3.5 px-5 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer text-xs font-semibold border ${isDark
+              className={`w-full sm:w-auto py-3.5 px-5 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer text-xs font-semibold border btn-press ${
+                isDark
                   ? 'bg-[#131620] border-white/[0.08] text-[var(--text-muted)] hover:text-white'
                   : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                }`}
+              }`}
             >
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Aviz Legal</span>
@@ -204,7 +210,7 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
         </div>
       </div>
 
-      {/* 2. Planned Features Bento Grid */}
+      {/* 2. Planned Features Grid */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
@@ -222,10 +228,7 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           {moduleInfo.plannedFeatures.map((feat, idx) => (
             <div
               key={idx}
-              className={`p-4 rounded-xl border flex flex-col gap-1.5 transition-colors ${isDark
-                  ? 'bg-[#131620]/60 border-white/[0.04]'
-                  : 'bg-white border-gray-100 shadow-sm'
-                }`}
+              className="apple-glass-card p-4 flex flex-col gap-1.5"
             >
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -240,6 +243,6 @@ export const WorkInProgressModule: React.FC<WorkInProgressModuleProps> = ({
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
