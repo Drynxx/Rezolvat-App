@@ -8,7 +8,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Drynxx/Rezolvat-App"><img src="https://img.shields.io/badge/Repo-Drynxx%2FRezolvat--App-0058FF?style=for-the-badge&logo=github" alt="GitHub Repo" /></a>
   <a href="#-quick-start"><img src="https://img.shields.io/badge/Vite-6.1-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" /></a>
   <a href="#-tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
